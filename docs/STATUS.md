@@ -23,7 +23,17 @@ Legend: **Live** = runs for real against CreateOS and a real model in the deploy
 | --- | --- | --- | --- | --- |
 | `scn_6d10440bd2eb425397bb8b12f7193e99` | `/fixtures/delayed` (repair demo) | seeded ✗ → agent ✗ (exit 0, failed checks) → agent ✓ | Suspicious | Browser e2e. Showed two evidence-quality bugs (screenshot before late form; unverified AI-directed text), fixed afterwards |
 | `scn_477a985d074d4b2da1589a152f9d0d7f` | `/fixtures/delayed` (repair demo) | seeded ✗ → agent ✓ | No obvious warning signs (**false negative**) | Model's extraction missed the shadow-root form. Fixed by making the verdict rest on trusted kit evidence. Kept as evidence |
-| `scn_5e855879fb38433abda0feffc29b67c7` | `/fixtures/login` | agent ✓ | High risk | Recorded demo `rec_live-fake-bank-login` |
+| `scn_5e855879fb38433abda0feffc29b67c7` | `/fixtures/login` | agent ✓ | High risk | Recorded demo `rec_live-fake-bank-login` (sandbox `sb-01m55vzrn7jhz34tjexkzwe5tg`) |
+| `scn_536ff05aea8e4d74a8ff09b9264e6c2e` | `/fixtures/delayed` (repair demo, after the fix) | seeded ✗ (`TypeError … reading 'action'`, 7.2 s) → agent ✓ (5.7 s) | High risk | Recorded demo `rec_repair-demo-delayed` (sandbox `sb-01m55w6m3cpryh1220rkr6e4ab`). Kit evidence added 2 urgency and 2 credential phrases the script missed. Its "claims to be 'Parcel delivery…'" sign predates the generic-heading filter and is kept as recorded |
+| `scn_f51714f32b964d5aa8277915ced6c541` | `/fixtures/injection` | agent ✓ (10.5 s) | High risk | Fresh-browser e2e: 64 s end to end, 0 console errors, 0 requests to any origin other than the app. The HIGH sign came from a generic heading ("Account Center") read as a brand; fixed afterwards (now Suspicious + AI-directed text) |
+
+All 8 sandboxes created on 17 October (probe, live integration test, local live scan, five production scans) were verified **destroyed** via the Sandbox API afterwards (`running 0, paused 0`).
+
+## Tests actually run
+
+- `npm run typecheck`, `npm run lint`, `npm test` (79 passed, 1 live test skipped by default), `npm run build:web`. Also run in GitHub Actions on every push to the branch, all green.
+- Opt-in live integration test against CreateOS EU (`npm run test:live`): **passed** (`docs/evidence/2026-10-17-live-integration-test.log`).
+- Browser automation against the deployed app: `scripts/e2e-live.mjs` (live repair demo, live injection scan) and `scripts/check-recorded.mjs` (recorded runs, desktop and mobile, console errors, off-origin requests, horizontal overflow).
 
 ## Fixture
 

@@ -499,7 +499,7 @@ section {
 
 .scan-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 300px minmax(0, 1fr);
   gap: 22px;
   align-items: start;
 }
@@ -907,7 +907,7 @@ section {
 
 @media (max-width: 900px) {
   .scan-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .timeline-col {
     position: static;
@@ -963,4 +963,23 @@ section {
 
 .hop-kind {
   margin-left: 8px;
+}
+
+.timeline-col,
+.technical,
+.attempt {
+  min-width: 0;
+}
+.attempt summary,
+.technical summary,
+.tech-meta dd {
+  overflow-wrap: anywhere;
+}
+.code {
+  max-width: 100%;
+}
+@media (max-width: 560px) {
+  .mode-tag {
+    white-space: normal;
+  }
 }
