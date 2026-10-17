@@ -92,7 +92,7 @@ Model and CreateOS credentials; the controller and its database; other users' sc
 | Form submission / purchases / downloads | Kit blocks every non-GET/HEAD request and sets `Browser.setDownloadBehavior: deny`; static checks reject `.submit()`; fixture pages disable submission. |
 | Resource exhaustion | Script timeout, overall deadline, result size cap (256 KB), screenshot cap (6 MB), max 30 redirect hops recorded, max 3 attempts and 3 host widenings, one sandbox at a time. |
 | Cross-user access | Scans belong to an HMAC-signed anonymous session; other sessions get 404 for scans, events and artifacts. Public demo scans are only controlled fixture data. |
-| Cost abuse | Live scans require `TEGER_LIVE_ACCESS_CODE`, per-session hourly limit, deployment-wide daily cap, concurrency 1. |
+| Cost abuse | Optional `TEGER_LIVE_ACCESS_CODE` (switched off on the hackathon deployment), per-session hourly limit, deployment-wide daily cap, concurrency 1. |
 | CSRF | SameSite=Lax cookie plus required `x-teger-client` header on mutating requests. |
 | Malicious artifact content | Screenshots are served from controller storage as `image/png` with `nosniff` and `CSP: default-src 'none'; sandbox`. The SPA never embeds the inspected site (no iframe, favicon or remote image). |
 | Orphaned sandboxes | Ledger of created sandboxes; `finally` cleanup; startup `recoverOrphans`; 300 s auto-pause only as a safety net. |
