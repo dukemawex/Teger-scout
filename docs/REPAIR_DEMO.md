@@ -29,7 +29,7 @@ The demonstration is honest about what is seeded (attempt 1) and what is real: t
 
 ## Running it
 
-1. Open the deployed app, enter the live access code.
+1. Open the deployed app.
 2. Click **Use for live scan** on "Slow page with unusual markup" (fills `/fixtures/delayed` on the deployment's public URL).
 3. Tick **Repair demonstration** and press **Inspect link**.
 4. Open **Technical evidence and execution history** to show attempt 1 (seeded, failed, stderr) and attempt 2 (agent-written, passed).

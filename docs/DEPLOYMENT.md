@@ -55,7 +55,7 @@ createos deployments promote --deployment <deployment-id> --environment <env-id>
 
 - Production URL: **https://production-teger-scout.tyzo.nodeops.app**
 - The container (`Dockerfile`) builds the web UI and the eve agent, then `scripts/start.mjs` runs the eve agent on `127.0.0.1:3101` (random per-boot Basic-auth secret) and the API on `:8080`. This is a long-running single instance, so a scan can run for its whole deadline in-process. Nothing is left running after an HTTP request returns.
-- Runtime variables set on the environment (names only): `CREATEOS_SANDBOX_API_KEY`, `CREATEOS_SANDBOX_BASE_URL`, `TEGER_MODEL_PROVIDER`, `TEGER_MODEL_ID`, `TEGER_MODEL_FALLBACKS`, `TEGER_MODEL_API_KEY`, `TEGER_SANDBOX_ROOTFS`, `TEGER_SANDBOX_SHAPE`, `TEGER_LIVE_ACCESS_CODE`, `TEGER_SESSION_SECRET`, `TEGER_PUBLIC_URL`, `TEGER_SCAN_DEADLINE_MS`, `TEGER_DAILY_LIVE_SCANS`, `TEGER_SESSION_HOURLY_SCANS`, `NODE_ENV`.
+- Runtime variables set on the environment (names only): `CREATEOS_SANDBOX_API_KEY`, `CREATEOS_SANDBOX_BASE_URL`, `TEGER_MODEL_PROVIDER`, `TEGER_MODEL_ID`, `TEGER_MODEL_FALLBACKS`, `TEGER_MODEL_API_KEY`, `TEGER_SANDBOX_ROOTFS`, `TEGER_SANDBOX_SHAPE`, `TEGER_SESSION_SECRET`, `TEGER_PUBLIC_URL`, `TEGER_SCAN_DEADLINE_MS`, `TEGER_DAILY_LIVE_SCANS`, `TEGER_SESSION_HOURLY_SCANS`, `NODE_ENV`.
 - Warning: `createos environments list -o json` prints environment variable **values**. Filter its output or avoid it in shared logs.
 
 ### Persistence

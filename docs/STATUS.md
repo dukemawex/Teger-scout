@@ -6,7 +6,7 @@ Legend: **Live** = runs for real against CreateOS and a real model in the deploy
 
 | Feature | Evidence |
 | --- | --- |
-| Deployed app on CreateOS | https://production-teger-scout.tyzo.nodeops.app (`/api/health` 200; `/api/status` reports live execution, EU sandbox region, access code required) |
+| Deployed app on CreateOS | https://production-teger-scout.tyzo.nodeops.app (`/api/health` 200; `/api/status` reports live execution, EU sandbox region, no access code (removed at the owner's request)) |
 | CreateOS sandbox per scan (EU region, `desktop:1`, `s-1vcpu-1gb`) | Sandboxes `sb-01m55rg1hgzrem4zt2rjf6aeja`, `sb-01m55txjrh9731bwgpxhetrf01`, `sb-01m55vk6qwvf2b2be2dnat7eyk`, `sb-01m55vxtvaj793bp70g3y0076j`, `sb-01m55vzrn7jhz34tjexkzwe5tg`, and those listed under "Live runs" below. All were destroyed at the end of their scans. |
 | Egress applied at creation, read back, bypass probe | `docs/evidence/2026-10-17-live-integration-test.log`, and the "Network policy" section of every live report |
 | Real model writes the script (eve → OpenRouter free models provisioned via Stripe Projects) | Production scan `scn_5e855879fb38433abda0feffc29b67c7` (`recorded/live-fake-bank-login.json`): agent-written script passed on attempt 1 |
@@ -14,7 +14,7 @@ Legend: **Live** = runs for real against CreateOS and a real model in the deploy
 | Screenshot captured inside the sandbox and served from controlled storage | Every live report above; artifacts served with `CSP: sandbox`, owner-only |
 | Redirect revalidation, blocked destinations | Unit/integration tests (`tests/controller.test.ts`); the `/fixtures/blocked-redirect` fixture |
 | Cleanup on success, failure, timeout | A local live scan hit the platform's auto-pause during a 7.7-minute model turn and still ended with "Sandbox destroyed" |
-| Access control, rate limits, access code for billable scans | `tests/app.test.ts`; production requires the code |
+| Access control and rate limits for billable scans | `tests/app.test.ts`. Production has no access code (owner's choice); live scans are capped per browser per hour, per deployment per day, and to one at a time. The CreateOS Free plan also caps creates at 10 per 24 h |
 | Refresh/reconnect | SSE with `Last-Event-ID` replay plus stored history (`tests/app.test.ts`) |
 
 ## Live runs on production (fresh browser or API sessions)

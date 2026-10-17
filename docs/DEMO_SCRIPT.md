@@ -1,6 +1,6 @@
 # Teger Scout: 90-second demo script
 
-**Setup before recording:** deployed app open in a clean browser window; live access code at hand; one recorded repair run available as backup in case the live sandbox quota is exhausted.
+**Setup before recording:** deployed app open in a clean browser window; one recorded repair run available as backup in case the live sandbox quota is exhausted.
 
 | Time | On screen | Say |
 | --- | --- | --- |

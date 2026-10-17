@@ -10,7 +10,7 @@ Built by **DUKERS LTD** (Emmanuel Effiom Duke) for the CreateOS × Stripe Projec
 
 ## Links
 
-- **Live app (CreateOS):** https://production-teger-scout.tyzo.nodeops.app. Offline fixtures are open to everyone; live scans need the owner's access code because each one creates a billable sandbox.
+- **Live app (CreateOS):** https://production-teger-scout.tyzo.nodeops.app. Open to everyone, including live scans. Each live scan creates a sandbox, so scans are limited per browser per hour, per deployment per day, and to one at a time. An optional access code (`TEGER_LIVE_ACCESS_CODE`) can be turned back on.
 - **Vercel:** the repository deploys to Vercel as the frontend (`vercel.json`), proxying `/api` to the CreateOS backend. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#4-vercel-frontend-in-front-of-the-createos-backend).
 - **Stripe Projects share link:** https://projects.dev/s#v1:createos~project,OpenRouter~api
 - Demo script: [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) · Submission draft: [docs/SUBMISSION.md](docs/SUBMISSION.md) · Sponsor checklist: [docs/SPONSOR_CHECKLIST.md](docs/SPONSOR_CHECKLIST.md)

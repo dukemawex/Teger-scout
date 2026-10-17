@@ -7,7 +7,7 @@
    │  same-origin JSON + SSE, signed session cookie
    ▼
  Teger Scout API (Hono, Node 24)  ── server/app.ts
-   │   • session-scoped scan ownership, access code for live scans, rate limits
+   │   • session-scoped scan ownership, rate limits, optional access code for live scans
    │   • SQLite (node:sqlite) for scans, events, attempts, artifacts, sandbox ledger
    │   • artifacts served from controlled storage with `CSP: sandbox`
    │
