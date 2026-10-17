@@ -1,0 +1,12 @@
+node_modules
+data
+dist
+.output
+.eve
+.git
+.env
+.env.*
+.projects/vault
+.projects/cache
+coverage
+test-results
