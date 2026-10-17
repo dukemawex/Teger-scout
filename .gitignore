@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.output/
+.eve/
+data/
+*.db
+*.db-wal
+*.db-shm
+.env
+.env.*
+!.env.example
+coverage/
+test-results/
+playwright-report/
+.projects/vault/
+.projects/cache/

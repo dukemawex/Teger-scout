@@ -1,0 +1,58 @@
+{
+  "name": "teger-scout",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Teger Scout: see where a link leads before you open it. An agent writes, runs and repairs link-inspection code inside a CreateOS sandbox.",
+  "type": "module",
+  "license": "MIT",
+  "author": "DUKERS LTD",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web,eve \"npm:dev:api\" \"npm:dev:web\" \"npm:dev:eve\"",
+    "dev:api": "tsx watch server/index.ts",
+    "dev:web": "vite",
+    "dev:eve": "eve dev --port 3101",
+    "build": "npm run build:web && npm run build:eve",
+    "build:web": "vite build",
+    "build:eve": "eve build",
+    "start": "node --import tsx server/index.ts",
+    "start:eve": "eve start --host 127.0.0.1 --port 3101",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:live": "TEGER_LIVE_TEST=1 vitest run tests/live",
+    "e2e": "node scripts/e2e.mjs"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^3.0.71",
+    "@hono/node-server": "^2.1.5",
+    "@nodeops-createos/sandbox": "^0.8.2",
+    "ai": "^7.0.143",
+    "eve": "^0.80.1",
+    "hono": "^4.13.13",
+    "tsx": "^4.23.15",
+    "zod": "^4.6.7"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "concurrently": "^10.0.6",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}

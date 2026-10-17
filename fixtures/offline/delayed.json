@@ -1,0 +1,74 @@
+{
+  "note": "OFFLINE FIXTURE: recorded locally with the human-written reference script and local Chromium. Not a CreateOS run, not model-generated.",
+  "requestedUrl": "http://localhost:8099/fixtures/delayed",
+  "blockedDestinations": [],
+  "result": {
+    "contractVersion": 1,
+    "requestedUrl": "http://localhost:8099/fixtures/delayed",
+    "finalUrl": "http://localhost:8099/fixtures/delayed",
+    "httpStatus": 200,
+    "redirectChain": [
+      {
+        "url": "http://localhost:8099/fixtures/delayed",
+        "status": 200,
+        "kind": "initial"
+      }
+    ],
+    "title": "Parcel delivery: action required",
+    "claimedIdentity": {
+      "siteName": null,
+      "brandMentions": [
+        "SwiftCourier"
+      ],
+      "evidence": [
+        "heading: Your parcel is on hold"
+      ]
+    },
+    "forms": [
+      {
+        "action": "https://pay.parcel-fee-desk.example/collect",
+        "method": "post",
+        "hasPasswordField": true,
+        "inputTypes": [
+          "email",
+          "text",
+          "password"
+        ],
+        "inputNames": [
+          "email",
+          "card",
+          "pin"
+        ],
+        "crossOriginAction": true
+      }
+    ],
+    "loginFormDetected": true,
+    "textSignals": {
+      "urgencyPhrases": [
+        "within 12 hours",
+        "within 12 hours"
+      ],
+      "credentialRequests": [
+        "Card PIN",
+        "Card number"
+      ],
+      "instructionsToAI": []
+    },
+    "visibleTextSample": "Teger Scout test fixture · harmless · no data is collected\nYour parcel is on hold\n\nDelivery details loaded.",
+    "externalScriptOrigins": [],
+    "blockedRequests": [],
+    "contactedHosts": [
+      {
+        "host": "localhost",
+        "count": 1
+      }
+    ],
+    "screenshot": {
+      "path": "/tmp/tmp.P9rHTFABRv/out-delayed/screenshot.png",
+      "bytes": 32819
+    },
+    "screenshotError": null,
+    "extractionErrors": [],
+    "notes": []
+  }
+}

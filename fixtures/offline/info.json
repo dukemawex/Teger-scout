@@ -1,0 +1,52 @@
+{
+  "note": "OFFLINE FIXTURE: recorded locally with the human-written reference script and local Chromium. Not a CreateOS run, not model-generated.",
+  "requestedUrl": "http://localhost:8099/fixtures/info",
+  "blockedDestinations": [],
+  "result": {
+    "contractVersion": 1,
+    "requestedUrl": "http://localhost:8099/fixtures/info",
+    "finalUrl": "http://localhost:8099/fixtures/info",
+    "httpStatus": 200,
+    "redirectChain": [
+      {
+        "url": "http://localhost:8099/fixtures/info",
+        "status": 200,
+        "kind": "initial"
+      }
+    ],
+    "title": "Lagos Community Reading Room: opening hours",
+    "claimedIdentity": {
+      "siteName": null,
+      "brandMentions": [],
+      "evidence": [
+        "heading: Lagos Community Reading Room",
+        "heading: This week"
+      ]
+    },
+    "forms": [],
+    "loginFormDetected": false,
+    "textSignals": {
+      "urgencyPhrases": [],
+      "credentialRequests": [],
+      "instructionsToAI": []
+    },
+    "visibleTextSample": "Teger Scout test fixture · harmless · no data is collected\nLagos Community Reading Room\n\nWe are open Monday to Saturday, 9:00 to 18:00. Entry is free. Bring a book, take a book.\n\nThis week\nTuesday: children's story hour\nThursday: digital safety basics for small businesses\n\nQuestions? Ask at the front desk.",
+    "externalScriptOrigins": [],
+    "blockedRequests": [],
+    "contactedHosts": [
+      {
+        "host": "localhost",
+        "count": 1
+      }
+    ],
+    "screenshot": {
+      "path": "/tmp/tmp.P9rHTFABRv/out-info/screenshot.png",
+      "bytes": 43756
+    },
+    "screenshotError": null,
+    "extractionErrors": [],
+    "notes": [
+      "no form appeared within 5s"
+    ]
+  }
+}

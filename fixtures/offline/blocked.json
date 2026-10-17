@@ -1,0 +1,75 @@
+{
+  "note": "OFFLINE FIXTURE: recorded locally with the human-written reference script and local Chromium. Not a CreateOS run, not model-generated.",
+  "requestedUrl": "http://localhost:8099/fixtures/blocked-redirect",
+  "blockedDestinations": [
+    {
+      "url": "http://169.254.169.254/latest/meta-data/",
+      "reason": "Blocked destination: non-public IPv4 range (cloud metadata / link-local)"
+    }
+  ],
+  "result": {
+    "contractVersion": 1,
+    "requestedUrl": "http://localhost:8099/fixtures/blocked-redirect",
+    "finalUrl": "chrome-error://chromewebdata/",
+    "httpStatus": null,
+    "redirectChain": [
+      {
+        "url": "http://localhost:8099/fixtures/blocked-redirect",
+        "status": 302,
+        "kind": "initial",
+        "location": "http://169.254.169.254/latest/meta-data/"
+      },
+      {
+        "url": "http://169.254.169.254/latest/meta-data/",
+        "status": null,
+        "kind": "http"
+      }
+    ],
+    "title": "169.254.169.254",
+    "claimedIdentity": {
+      "siteName": null,
+      "brandMentions": [],
+      "evidence": [
+        "heading: 169.254.169.254 is blocked"
+      ]
+    },
+    "forms": [],
+    "loginFormDetected": false,
+    "textSignals": {
+      "urgencyPhrases": [],
+      "credentialRequests": [],
+      "instructionsToAI": []
+    },
+    "visibleTextSample": "169.254.169.254 is blocked\n\nThis page has been blocked by Chromium\n\nERR_BLOCKED_BY_CLIENT\nReload",
+    "externalScriptOrigins": [],
+    "blockedRequests": [
+      {
+        "url": "http://169.254.169.254/latest/meta-data/",
+        "method": "GET",
+        "resourceType": "Document",
+        "reason": "host-not-authorized",
+        "isDocument": true
+      }
+    ],
+    "contactedHosts": [
+      {
+        "host": "localhost",
+        "count": 1
+      },
+      {
+        "host": "169.254.169.254",
+        "count": 1
+      }
+    ],
+    "screenshot": {
+      "path": "/tmp/tmp.P9rHTFABRv/out-blocked/screenshot.png",
+      "bytes": 20801
+    },
+    "screenshotError": null,
+    "extractionErrors": [],
+    "notes": [
+      "navigation: net::ERR_BLOCKED_BY_CLIENT",
+      "no form appeared within 5s"
+    ]
+  }
+}

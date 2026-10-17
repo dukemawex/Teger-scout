@@ -1,0 +1,96 @@
+{
+  "note": "OFFLINE FIXTURE: recorded locally with the human-written reference script and local Chromium. Not a CreateOS run, not model-generated.",
+  "requestedUrl": "http://localhost:8099/fixtures/redirect/start",
+  "blockedDestinations": [],
+  "result": {
+    "contractVersion": 1,
+    "requestedUrl": "http://localhost:8099/fixtures/redirect/start",
+    "finalUrl": "http://localhost:8099/fixtures/login",
+    "httpStatus": 200,
+    "redirectChain": [
+      {
+        "url": "http://localhost:8099/fixtures/redirect/start",
+        "status": 302,
+        "kind": "initial",
+        "location": "http://localhost:8099/fixtures/redirect/hop-1?ref=sms&session_token=abc123def456ghi789jkl012"
+      },
+      {
+        "url": "http://localhost:8099/fixtures/redirect/hop-1?ref=sms&session_token=abc123def456ghi789jkl012",
+        "status": 301,
+        "kind": "http",
+        "location": "http://localhost:8099/fixtures/redirect/hop-2"
+      },
+      {
+        "url": "http://localhost:8099/fixtures/redirect/hop-2",
+        "status": 302,
+        "kind": "http",
+        "location": "http://localhost:8099/fixtures/login"
+      },
+      {
+        "url": "http://localhost:8099/fixtures/login",
+        "status": 200,
+        "kind": "http"
+      }
+    ],
+    "title": "NorthPeak Bank | Secure Sign In",
+    "claimedIdentity": {
+      "siteName": "NorthPeak Bank",
+      "brandMentions": [
+        "NorthPeak Bank"
+      ],
+      "evidence": [
+        "og:site_name=NorthPeak Bank",
+        "logo alt=NorthPeak Bank",
+        "heading: Sign in to Online Banking"
+      ]
+    },
+    "forms": [
+      {
+        "action": "https://collector.northpeak-verify-support.example/steal",
+        "method": "post",
+        "hasPasswordField": true,
+        "inputTypes": [
+          "text",
+          "password"
+        ],
+        "inputNames": [
+          "username",
+          "password"
+        ],
+        "crossOriginAction": true
+      }
+    ],
+    "loginFormDetected": true,
+    "textSignals": {
+      "urgencyPhrases": [
+        "account has been suspended",
+        "Verify within 24 hours",
+        "unusual activity",
+        "within 24 hours",
+        "permanent closure"
+      ],
+      "credentialRequests": [
+        "enter your password",
+        "confirm your card number",
+        "card number"
+      ],
+      "instructionsToAI": []
+    },
+    "visibleTextSample": "Teger Scout test fixture · harmless · no data is collected\nSign in to Online Banking\n\nYour account has been suspended due to unusual activity. Verify within 24 hours to avoid permanent closure.\n\nOnline banking ID\nPassword\n\nPlease enter your password and confirm your card number on the next step.\n\nSign in securely",
+    "externalScriptOrigins": [],
+    "blockedRequests": [],
+    "contactedHosts": [
+      {
+        "host": "localhost",
+        "count": 4
+      }
+    ],
+    "screenshot": {
+      "path": "/tmp/tmp.P9rHTFABRv/out-redirect/screenshot.png",
+      "bytes": 45794
+    },
+    "screenshotError": null,
+    "extractionErrors": [],
+    "notes": []
+  }
+}
