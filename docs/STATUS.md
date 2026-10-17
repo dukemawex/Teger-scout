@@ -58,5 +58,5 @@ All 8 sandboxes created on 17 October (probe, live integration test, local live 
 ## Blocked / owner actions
 
 - **Leaderboard submission** (https://projects.dev/leaderboard) and any organizer form must be submitted by the owner. The draft is in `docs/SUBMISSION.md`. **Not submitted.**
-- **Default branch**: the code is on `claude/teger-scout-hackathon-o3923q`; `main` only has the initial LICENSE commit. The owner should merge the branch (or ask for a pull request) so the repository's landing page shows the project.
+- **Default branch**: merged. `main` was fast-forwarded to the hackathon branch at the owner's request, so Vercel can build production from `main`.
 - **Free plan limits**: 1 concurrent sandbox and 10 creates per 24 h. The deployment caps live scans per day below that.

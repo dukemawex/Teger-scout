@@ -6,7 +6,7 @@
 | --- | --- |
 | Project name | Teger Scout |
 | Team / company | DUKERS LTD (Emmanuel Effiom Duke) |
-| Public repository | https://github.com/dukemawex/Teger-scout (branch `claude/teger-scout-hackathon-o3923q`; see note in README if the default branch differs) |
+| Public repository | https://github.com/dukemawex/Teger-scout |
 | Working application | https://production-teger-scout.tyzo.nodeops.app |
 | Stripe account ID | `acct_1QmJ4VJQDWbpVXUN` |
 | Stripe Projects share link | https://projects.dev/s#v1:createos~project,OpenRouter~api |
