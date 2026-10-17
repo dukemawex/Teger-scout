@@ -8,7 +8,7 @@ COPY . .
 # metadata names the model that is actually called. Override at runtime.
 ENV TEGER_MODEL_PROVIDER=openai-compatible \
     TEGER_MODEL_ID=poolside/laguna-s-2.1:free \
-    TEGER_MODEL_FALLBACKS=poolside/laguna-xs-2.1:free,nvidia/nemotron-3-super-120b-a12b:free,cohere/north-mini-code:free \
+    TEGER_MODEL_FALLBACKS=poolside/laguna-xs-2.1:free,nvidia/nemotron-3-super-120b-a12b:free \
     CREATEOS_SANDBOX_BASE_URL=https://api-eu.sb.createos.sh \
     TEGER_SANDBOX_ROOTFS=desktop:1 \
     TEGER_SANDBOX_SHAPE=s-1vcpu-1gb

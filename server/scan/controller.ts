@@ -23,6 +23,7 @@ export interface SandboxHandle {
   runScript(script: string, timeoutSec: number, signal?: AbortSignal): Promise<{ exitCode: number | null; stdout: string; stderr: string; execMs: number; timedOut: boolean; agentError?: string }>;
   download(path: string, maxBytes: number): Promise<Buffer | null>;
   destroy(): Promise<void>;
+  ensureRunning?(): Promise<boolean>;
 }
 
 export interface ControllerDeps {
@@ -140,6 +141,26 @@ export class ScanController {
       }
       this.event(scanId, "validate", "success", `Destination allowed: ${parsed.host} → ${authorized[0].ips.join(", ")} (public addresses only)`);
 
+      // The model never sees the URL, so its first draft can be written while
+      // the sandbox is prepared. Nothing it writes runs until egress is locked.
+      const author = await this.deps.beginAuthor(signal);
+      let firstDraft: Promise<{ proposal: ScriptProposal; author: "model" | "seeded" }>;
+      if (scan.repair_demo && this.deps.seededDraft) {
+        const seeded = this.deps.seededDraft;
+        firstDraft = seeded().then((script) => ({
+          proposal: { script, explanation: "Seeded draft for the repair demonstration. Contains a deliberate, documented defect. Not written by the model." },
+          author: "seeded" as const,
+        }));
+        this.event(scanId, "write", "warn", "Repair demonstration: attempt 1 uses a deliberately defective seeded draft (see docs/REPAIR_DEMO.md)");
+      } else {
+        this.event(scanId, "write", "info", "Asking the inspection agent (eve) to write the script while the sandbox is prepared");
+        firstDraft = author.write({ attemptBudget: cfg.limits.maxAttempts, timeoutSec: cfg.limits.scriptTimeoutSec }).then((proposal) => {
+          this.event(scanId, "write", "success", `Agent wrote ${proposal.script.split("\n").length} lines: ${proposal.explanation}`, { eveSession: author.sessionId });
+          return { proposal, author: "model" as const };
+        });
+      }
+      firstDraft.catch(() => {}); // awaited below; avoid an unhandled rejection if preparation fails first
+
       // 2. Prepare the isolated browser with a least-privilege egress policy
       //    applied at creation time, before any generated code exists.
       check();
@@ -173,20 +194,11 @@ export class ScanController {
       await sandbox.prepare(await this.deps.kitSource(), task());
       this.event(scanId, "prepare", "success", "Trusted helper and task file installed in the sandbox");
 
-      // 3. Ask the model for an inspection script (or use the labelled seeded draft).
+      // 3. Wait for the first draft (model-written, or the labelled seeded draft).
       check();
-      const author = await this.deps.beginAuthor(signal);
-      let proposal: ScriptProposal;
-      let proposalAuthor: "model" | "seeded" = "model";
-      if (scan.repair_demo && this.deps.seededDraft) {
-        proposal = { script: await this.deps.seededDraft(), explanation: "Seeded draft for the repair demonstration. Contains a deliberate, documented defect. Not written by the model." };
-        proposalAuthor = "seeded";
-        this.event(scanId, "write", "warn", "Repair demonstration: attempt 1 uses a deliberately defective seeded draft (see docs/REPAIR_DEMO.md)");
-      } else {
-        this.event(scanId, "write", "info", "Asking the inspection agent (eve) to write the script");
-        proposal = await author.write({ attemptBudget: cfg.limits.maxAttempts, timeoutSec: cfg.limits.scriptTimeoutSec });
-        this.event(scanId, "write", "success", `Agent wrote ${proposal.script.split("\n").length} lines: ${proposal.explanation}`, { eveSession: author.sessionId });
-      }
+      const first = await firstDraft;
+      let proposal: ScriptProposal = first.proposal;
+      let proposalAuthor: "model" | "seeded" = first.author;
 
       let expansions = 0;
       while (attempts < cfg.limits.maxAttempts) {
@@ -202,6 +214,7 @@ export class ScanController {
           evaluation = { ok: false, failedChecks: staticProblems, result: null, screenshot: null, newDocumentHosts: [] };
           this.event(scanId, "run", "warn", `Attempt ${attempts} rejected before execution: ${staticProblems[0]}`);
         } else {
+          if (await sandbox.ensureRunning?.()) this.event(scanId, "prepare", "warn", "Sandbox had been paused by the platform; resumed it before running");
           this.event(scanId, "run", "info", `Attempt ${attempts}: running ${proposalAuthor === "seeded" ? "seeded draft" : "agent-written script"} in the sandbox (limit ${cfg.limits.scriptTimeoutSec}s)`);
           run = await sandbox.runScript(script, cfg.limits.scriptTimeoutSec, signal);
           evaluation = await this.evaluate(sandbox, run, parsed.href, authorized);

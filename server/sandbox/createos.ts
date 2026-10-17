@@ -57,8 +57,10 @@ export class InspectionSandbox {
         rootfs: cfg.createos.rootfs,
         name,
         egress,
-        // Safety net only: stops compute if the controller dies. Deletion is still explicit.
-        auto_pause_after_seconds: 300,
+        // Safety net only: stops compute if the controller dies. It must exceed
+        // the scan deadline or a slow model turn would pause a live scan.
+        // Deletion is still explicit.
+        auto_pause_after_seconds: Math.min(86_400, Math.ceil(cfg.limits.scanDeadlineMs / 1000) + 120),
       },
       { waitTimeoutMs: 120_000, signal },
     );
@@ -68,6 +70,18 @@ export class InspectionSandbox {
   static async connect(cfg: AppConfig, id: string) {
     const sb = await sandboxClient(cfg).getSandbox(id);
     return new InspectionSandbox(sb, []);
+  }
+
+  /** Resume the sandbox if the platform paused it; returns true when a resume was needed. */
+  async ensureRunning(): Promise<boolean> {
+    await this.sb.refresh();
+    if (this.sb.status === "paused" || this.sb.status === "pausing") {
+      if (this.sb.status === "pausing") await this.sb.waitUntilPaused({ timeoutMs: 60_000 });
+      await this.sb.resume();
+      await this.sb.waitUntilRunning({ timeoutMs: 120_000 });
+      return true;
+    }
+    return false;
   }
 
   async readEgress(): Promise<string[]> {

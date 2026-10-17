@@ -32,7 +32,8 @@ function selectModel() {
         fetch: async (url, init) => {
           if (typeof init?.body === "string" && String(url).includes("openrouter.ai")) {
             const body = JSON.parse(init.body);
-            if (fallbacks.length) body.models = [body.model, ...fallbacks.filter((m) => m !== body.model)];
+            // OpenRouter accepts at most 3 entries in `models`.
+            if (fallbacks.length) body.models = [body.model, ...fallbacks.filter((m) => m !== body.model)].slice(0, 3);
             if (reasoning !== "default") body.reasoning = { effort: reasoning };
             init = { ...init, body: JSON.stringify(body) };
           }
