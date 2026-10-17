@@ -11,6 +11,7 @@ Built by **DUKERS LTD** (Emmanuel Effiom Duke) for the CreateOS × Stripe Projec
 ## Links
 
 - **Live app (CreateOS):** https://production-teger-scout.tyzo.nodeops.app. Offline fixtures are open to everyone; live scans need the owner's access code because each one creates a billable sandbox.
+- **Vercel:** the repository deploys to Vercel as the frontend (`vercel.json`), proxying `/api` to the CreateOS backend. See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md#4-vercel-frontend-in-front-of-the-createos-backend).
 - **Stripe Projects share link:** https://projects.dev/s#v1:createos~project,OpenRouter~api
 - Demo script: [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) · Submission draft: [docs/SUBMISSION.md](docs/SUBMISSION.md) · Sponsor checklist: [docs/SPONSOR_CHECKLIST.md](docs/SPONSOR_CHECKLIST.md)
 
@@ -26,7 +27,7 @@ paste link → validate (trusted) → CreateOS sandbox with IP-allowlist egress 
           → verified screenshot + evidence → deterministic verdict → sandbox destroyed
 ```
 
-- **Agent**: an [eve](https://www.npmjs.com/package/eve) agent (`agent/`) with no tools (`defaultTools: false`). It returns only `{script, explanation}` through eve's per-turn output schema. Model is configurable (`TEGER_MODEL_PROVIDER`, `TEGER_MODEL_ID`).
+- **Agent**: an [eve](https://www.npmjs.com/package/eve) agent (`agent/`) with no tools (`defaultTools: false`). It returns only a script and a one-line explanation (eve output schema, or a parsed text contract for models without JSON-schema support). Models: Gemini via a Google AI Studio key when configured, with OpenRouter free models (provisioned through Stripe Projects, or your own key) as fallback.
 - **Controller** (`server/scan/controller.ts`): owns the loop, limits, acceptance checks, network policy, redirect re-authorisation, and cleanup. The model cannot change any of them.
 - **Sandbox** (`server/sandbox/createos.ts`): `@nodeops-createos/sandbox` against `CREATEOS_SANDBOX_BASE_URL` (organizer region `https://api-eu.sb.createos.sh`). Egress is set at creation to validated `IP:80/443` rules, read back, and tested with a bypass probe before any generated code runs.
 - **Trusted kit** (`sandbox-kit/scout-kit.mjs`): uploaded into the VM; launches headless Chrome with DNS pinned to validated IPs, blocks unauthorised hosts and every non-GET request, records the redirect chain, captures the screenshot.

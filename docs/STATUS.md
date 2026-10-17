@@ -35,6 +35,12 @@ All 8 sandboxes created on 17 October (probe, live integration test, local live 
 - Opt-in live integration test against CreateOS EU (`npm run test:live`): **passed** (`docs/evidence/2026-10-17-live-integration-test.log`).
 - Browser automation against the deployed app: `scripts/e2e-live.mjs` (live repair demo, live injection scan) and `scripts/check-recorded.mjs` (recorded runs, desktop and mobile, console errors, off-origin requests, horizontal overflow).
 
+## Configured, awaiting owner keys
+
+- **Gemini (Google AI Studio)**: supported as the primary model (`agent/agent.ts`, `auto` mode) with OpenRouter free models as fallback (`agent/lib/fallback-model.ts`, unit-tested). Not yet exercised live: it activates once `GEMINI_API_KEY` is set on the CreateOS environment.
+- **Owner's own OpenRouter key**: `TEGER_MODEL_API_KEY` overrides the Stripe-provisioned key.
+- **Vercel frontend**: `vercel.json` verified with `vercel build` on a clean clone. The live Vercel URL will exist once the owner imports the repository in Vercel.
+
 ## Fixture
 
 - Offline fixture mode for all six demonstration pages (`fixtures/offline/`), recorded locally with the human-written reference script and local Chromium. Labelled "OFFLINE FIXTURE (NO SANDBOX, NO MODEL)" everywhere.

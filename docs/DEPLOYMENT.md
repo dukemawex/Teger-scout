@@ -61,7 +61,33 @@ createos deployments promote --deployment <deployment-id> --environment <env-id>
 ### Persistence
 The SQLite database lives on the container disk. It survives page refreshes and SSE reconnects, but not a redeploy or container replacement. Recorded demos in `recorded/` are re-imported at boot. A provisioned store (for example Postgres) would be the next step.
 
-## 4. Cleanup
+## 4. Vercel (frontend) in front of the CreateOS backend
+
+Scans run for minutes (free models can take 10+), which does not fit request-scoped serverless functions, so the API, controller, eve agent and SQLite stay on the long-running CreateOS service. Vercel serves the static UI and proxies the API on the same origin, so session cookies and the CSRF header work unchanged.
+
+`vercel.json` (no environment variables needed on Vercel):
+- `buildCommand: npm run build:web`, `outputDirectory: dist/web`, `framework: null` (prevents auto-detection of the eve package as an app)
+- rewrites: `/api/*` and `/fixtures/*` → `https://production-teger-scout.tyzo.nodeops.app/...`; everything else → `index.html`
+- the same CSP and security headers as the backend
+- the UI falls back to polling `/api/scans/:id/events` every 4 s in case the proxy buffers server-sent events
+
+Verified locally with `vercel build` on a clean clone (status ok; routes as above).
+
+To deploy: Vercel → Add New Project → import `dukemawex/Teger-scout` → keep the settings from `vercel.json` → Deploy. Vercel builds production from the repository's **production branch** (default `main`). Either merge `claude/teger-scout-hackathon-o3923q` into `main`, or set Project Settings → Git → Production Branch to that branch.
+
+## 5. Model keys
+
+`agent/agent.ts` selects the model at runtime (`TEGER_MODEL_PROVIDER=auto` on the deployment):
+
+| Variable (set on the CreateOS environment, not on Vercel) | Effect |
+| --- | --- |
+| `GEMINI_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY` | Google AI Studio key. When present, Gemini (`TEGER_GEMINI_MODEL_ID`, default `gemini-flash-latest`) becomes the primary model. |
+| `TEGER_MODEL_API_KEY` | Your own OpenRouter key. Overrides the Stripe-provisioned `OPENROUTER_API_API_KEY`. Used for the free OpenRouter models, as the fallback behind Gemini. |
+| `TEGER_OPENROUTER_MODEL_ID`, `TEGER_MODEL_FALLBACKS` | Free OpenRouter model and server-side fallback list (max 3 models in total). |
+
+If the primary model's request fails (rate limit, outage, bad key), the same turn is retried on the fallback (`agent/lib/fallback-model.ts`). After adding or changing a key, redeploy (or promote a new deployment) so the container picks it up.
+
+## 6. Cleanup
 
 Scan sandboxes are destroyed by the controller on success, failure, timeout and cancellation; anything left after a crash is destroyed at the next boot (`recoverOrphans`). To check manually:
 
