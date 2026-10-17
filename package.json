@@ -4,7 +4,7 @@
   "private": true,
   "description": "Teger Scout: see where a link leads before you open it. An agent writes, runs and repairs link-inspection code inside a CreateOS sandbox.",
   "type": "module",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "DUKERS LTD",
   "engines": {
     "node": ">=24"
