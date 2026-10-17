@@ -60,7 +60,48 @@ export const resultSchema = z.object({
   screenshotError: str(1000).nullable(),
   extractionErrors: strList(20, 1000),
   notes: strList(20, 500),
+  // Added by the trusted kit's writeResult, not by the generated script.
+  kitEvidence: z
+    .union([
+      z.object({ text: str(20000), passwordInputs: z.number().int().min(0), forms: z.number().int().min(0), title: str(500).nullable(), url: str(2048) }),
+      z.object({ error: str(400) }),
+    ])
+    .nullable()
+    .optional(),
 });
+
+/**
+ * Reconcile the script's claims with what the trusted kit observed. Text
+ * signals must appear verbatim in the kit's page text; login-form detection
+ * follows the kit's password-input count. Returns the corrected result and
+ * human-readable notes for every correction.
+ */
+export function reconcileWithKit(r: InspectionResult): { result: InspectionResult; corrections: string[] } {
+  const kit = r.kitEvidence && "text" in r.kitEvidence ? r.kitEvidence : null;
+  if (!kit) return { result: r, corrections: r.kitEvidence ? ["kit evidence unavailable; script claims could not be verified"] : [] };
+  const corrections: string[] = [];
+  const haystack = kit.text.toLowerCase();
+  const verify = (label: string, phrases: string[]) =>
+    phrases.filter((p) => {
+      const ok = p.trim().length >= 3 && haystack.includes(p.trim().toLowerCase().replace(/\s+/g, " "));
+      if (!ok) corrections.push(`dropped unverified ${label} "${p.slice(0, 80)}" (not found in page text captured by the kit)`);
+      return ok;
+    });
+  const textSignals = {
+    urgencyPhrases: verify("urgency phrase", r.textSignals.urgencyPhrases),
+    credentialRequests: verify("credential request", r.textSignals.credentialRequests),
+    instructionsToAI: verify("AI-directed text", r.textSignals.instructionsToAI),
+  };
+  let loginFormDetected = r.loginFormDetected;
+  if (kit.passwordInputs > 0 && !loginFormDetected) {
+    loginFormDetected = true;
+    corrections.push(`kit found ${kit.passwordInputs} password field(s) the script missed`);
+  } else if (kit.passwordInputs === 0 && loginFormDetected) {
+    loginFormDetected = false;
+    corrections.push("script reported a login form but the kit found no password field");
+  }
+  return { result: { ...r, textSignals, loginFormDetected }, corrections };
+}
 
 export type InspectionResult = z.infer<typeof resultSchema>;
 

@@ -45,6 +45,11 @@ export function createApp({ cfg, store, runner, offline }: AppDeps) {
     c.header("X-Content-Type-Options", "nosniff");
     c.header("Referrer-Policy", "no-referrer");
     c.header("X-Frame-Options", "DENY");
+    // Stops CDN edges from rewriting responses (e.g. injecting analytics scripts).
+    if (!c.res.headers.get("Cache-Control")?.includes("no-transform")) {
+      const existing = c.res.headers.get("Cache-Control");
+      c.header("Cache-Control", existing ? `${existing}, no-transform` : "no-transform");
+    }
     if (!c.req.path.startsWith("/fixtures/") && !c.res.headers.has("Content-Security-Policy")) {
       c.header(
         "Content-Security-Policy",

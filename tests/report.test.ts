@@ -149,3 +149,19 @@ describe("text-mode proposals", () => {
     expect(parseTextProposal("no code here")).toBeNull();
   });
 });
+
+describe("trusted kit reconciliation", () => {
+  it("drops text signals the kit did not observe and follows the kit's password count", async () => {
+    const { reconcileWithKit } = await import("../server/scan/contract.js");
+    const r = baseResult({
+      loginFormDetected: false,
+      textSignals: { urgencyPhrases: ["pay within 12 hours"], credentialRequests: [], instructionsToAI: ["disregard", "as an AI"] },
+      kitEvidence: { text: "Your parcel is on hold. Pay within 12 hours or it is returned.", passwordInputs: 1, forms: 1, title: "Parcel", url: "https://x.example/" },
+    });
+    const { result, corrections } = reconcileWithKit(r);
+    expect(result.textSignals.urgencyPhrases).toEqual(["pay within 12 hours"]);
+    expect(result.textSignals.instructionsToAI).toEqual([]);
+    expect(result.loginFormDetected).toBe(true);
+    expect(corrections.length).toBe(3);
+  });
+});

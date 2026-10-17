@@ -5,7 +5,7 @@ import type { AppConfig } from "../config.js";
 import type { Store } from "../store/db.js";
 import { authorizeHost, parseTarget, redactUrl, UrlPolicyError, type AuthorizedHost, type Resolver } from "../policy/url.js";
 import { buildEgressRules, buildResolverRules } from "../policy/egress.js";
-import { resultSchema, validateScreenshot, type InspectionResult } from "./contract.js";
+import { reconcileWithKit, resultSchema, validateScreenshot, type InspectionResult } from "./contract.js";
 import { buildReport, type BlockedDestination } from "./report.js";
 import { checkScript, normalizeScript } from "../agent/script-check.js";
 import type { AuthorSession, ScriptProposal } from "../agent/author.js";
@@ -60,6 +60,7 @@ const excerpt = (s: string, max = 2000) => {
 const sha256 = (s: string | Buffer) => createHash("sha256").update(s).digest("hex");
 
 interface AttemptEvaluation {
+  corrections?: string[];
   ok: boolean;
   failedChecks: string[];
   result: InspectionResult | null;
@@ -187,7 +188,7 @@ export class ScanController {
         url: parsed.href,
         allowedHosts: authorized.map((h) => h.host),
         resolverRules: buildResolverRules(authorized),
-        limits: { navigationTimeoutMs: cfg.limits.navigationTimeoutMs },
+        limits: { navigationTimeoutMs: cfg.limits.navigationTimeoutMs, settleMs: 4000 },
         viewport: { width: 1280, height: 800 },
         outDir: OUT_DIR,
       });
@@ -264,6 +265,7 @@ export class ScanController {
 
         if (evaluation.ok) {
           this.event(scanId, "run", "success", `Attempt ${attempts} passed every acceptance check`);
+          if (evaluation.corrections?.length) this.event(scanId, "collect", "warn", `Trusted kit evidence corrected ${evaluation.corrections.length} script claim(s)`, { corrections: evaluation.corrections });
           break;
         }
         this.event(scanId, "run", "warn", `Attempt ${attempts} failed: ${evaluation.failedChecks.slice(0, 3).join("; ")}`, { exitCode: run.exitCode, stderr: excerpt(run.stderr, 600) });
@@ -359,14 +361,19 @@ export class ScanController {
     if (run.timedOut) failed.push("script exceeded the controller time limit");
     else if (run.exitCode !== 0) failed.push(`script exited with status ${run.exitCode}`);
 
-    const rawResult = await sandbox.download(`${OUT_DIR}/result.json`, 300 * 1024);
+    const corrections: string[] = [];
+    const rawResult = await sandbox.download(`${OUT_DIR}/result.json`, 320 * 1024);
     let result: InspectionResult | null = null;
     if (!rawResult) failed.push("result.json missing (writeResult was not called or failed)");
     else {
       try {
         const parsedJson = JSON.parse(rawResult.toString("utf8"));
         const v = resultSchema.safeParse(parsedJson);
-        if (v.success) result = v.data;
+        if (v.success) {
+          const reconciled = reconcileWithKit(v.data);
+          result = reconciled.result;
+          corrections.push(...reconciled.corrections);
+        }
         else failed.push(...v.error.issues.slice(0, 6).map((i) => `result.${i.path.join(".") || "(root)"}: ${i.message}`));
       } catch {
         failed.push("result.json is not valid JSON");
@@ -406,6 +413,7 @@ export class ScanController {
     }
 
     return {
+      corrections,
       ok: failed.length === 0 && newHosts.size === 0,
       failedChecks: newHosts.size > 0 && failed.length === 0 ? ["navigation reached a host that is not yet authorized"] : failed,
       result,

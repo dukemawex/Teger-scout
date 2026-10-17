@@ -21,7 +21,7 @@ export const OUT_DIR = task.outDir ?? "/tmp/teger/out";
 export const SCREENSHOT_PATH = `${OUT_DIR}/screenshot.png`;
 export const RESULT_PATH = `${OUT_DIR}/result.json`;
 
-const MAX_RESULT_BYTES = 256 * 1024;
+const MAX_RESULT_BYTES = 300 * 1024;
 const MAX_TEXT = 4000;
 
 const allowedHosts = new Set((task.allowedHosts ?? []).map((h) => String(h).toLowerCase()));
@@ -257,12 +257,16 @@ async function createPage(cdp, viewport) {
   mainFrameId = tree.frameTree.frame.id;
 
   const page = {
-    /** Navigate and wait for the load event (or the timeout). */
+    /** Navigate, wait for the load event (or the timeout), then a short settle period. */
     async goto(url, { timeoutMs = task.limits?.navigationTimeoutMs ?? 15000 } = {}) {
       loadFired = false;
       const nav = await send("Page.navigate", { url });
       const started = Date.now();
       while (!loadFired && Date.now() - started < timeoutMs) await sleep(100);
+      // Settle period: scam pages often render their forms late (timers,
+      // client-side frameworks). Bounded so slow pages cannot stall the scan.
+      const settleMs = task.limits?.settleMs ?? 4000;
+      await sleep(Math.max(0, Math.min(settleMs, timeoutMs - (Date.now() - started))));
       return {
         navigationError: nav.errorText ?? null,
         loadEventFired: loadFired,
@@ -304,7 +308,30 @@ async function createPage(cdp, viewport) {
     contactedHosts: () => [...subresourceHosts.entries()].map(([host, count]) => ({ host, count })),
     mainResponse: () => (mainResponse ? { ...mainResponse } : null),
   };
+  lastPage = page;
   return page;
+}
+
+let lastPage = null;
+
+/**
+ * Evidence captured by the trusted kit itself (not by the generated script):
+ * all page text including open shadow roots and hidden text, and a count of
+ * password inputs. The controller uses it to verify the script's claims.
+ */
+async function kitEvidence() {
+  if (!lastPage) return null;
+  try {
+    return await lastPage.evaluate(() => {
+      const roots = [document, ...[...document.querySelectorAll("*")].map((el) => el.shadowRoot).filter(Boolean)];
+      const text = roots.map((r) => (r === document ? document.documentElement.textContent : r.textContent) || "").join("\n");
+      const passwords = roots.reduce((n, r) => n + r.querySelectorAll("input[type=password]").length, 0);
+      const forms = roots.reduce((n, r) => n + r.querySelectorAll("form").length, 0);
+      return { text: text.replace(/\s+/g, " ").slice(0, 20000), passwordInputs: passwords, forms, title: document.title || null, url: location.href };
+    });
+  } catch (e) {
+    return { error: String(e.message).slice(0, 300) };
+  }
 }
 
 /** Truncate strings so results stay within contract limits. */
@@ -316,7 +343,7 @@ export function clip(value, max = MAX_TEXT) {
 /** Write the contract result. Must be called exactly once by the script. */
 export async function writeResult(result) {
   await mkdir(OUT_DIR, { recursive: true });
-  const json = JSON.stringify({ contractVersion: 1, ...result });
+  const json = JSON.stringify({ contractVersion: 1, ...result, kitEvidence: await kitEvidence() });
   if (Buffer.byteLength(json) > MAX_RESULT_BYTES) {
     throw new Error(`scout-kit: result.json exceeds ${MAX_RESULT_BYTES} bytes`);
   }
