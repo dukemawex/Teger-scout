@@ -23,7 +23,7 @@ interface RecordedScan {
 }
 
 export async function importRecordedDemos(store: Store, cfg: AppConfig, dir: string) {
-  let entries: string[] = [];
+  let entries: string[];
   try {
     entries = (await readdir(dir)).filter((f) => f.endsWith(".json"));
   } catch {

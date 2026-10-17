@@ -2,7 +2,10 @@ import { BlockList, isIP } from "node:net";
 
 // Destinations an inspection sandbox must never reach, whatever DNS says.
 // Anything not matched here and inside global unicast space is "public".
-const blocked = new BlockList();
+// Separate lists: Node's BlockList matches IPv4 lookups against IPv4-mapped
+// IPv6 subnets, so a shared list would make ::ffff:0:0/96 block every IPv4.
+const blockedV4 = new BlockList();
+const blockedV6 = new BlockList();
 
 const V4_BLOCKED: Array<[string, number]> = [
   ["0.0.0.0", 8], // "this" network
@@ -40,8 +43,8 @@ const V6_BLOCKED: Array<[string, number]> = [
   ["ff00::", 8], // multicast
 ];
 
-for (const [net, prefix] of V4_BLOCKED) blocked.addSubnet(net, prefix, "ipv4");
-for (const [net, prefix] of V6_BLOCKED) blocked.addSubnet(net, prefix, "ipv6");
+for (const [net, prefix] of V4_BLOCKED) blockedV4.addSubnet(net, prefix, "ipv4");
+for (const [net, prefix] of V6_BLOCKED) blockedV6.addSubnet(net, prefix, "ipv6");
 
 /** Extract an IPv4 address embedded in an IPv4-mapped / compatible / NAT64 IPv6 address. */
 export function embeddedIPv4(v6: string): string | null {
@@ -65,12 +68,12 @@ export function classifyIp(address: string): IpVerdict {
   const family = isIP(raw);
   if (family === 0) return { ok: false, reason: "not an IP address" };
   if (family === 4) {
-    if (blocked.check(raw, "ipv4")) return { ok: false, reason: `non-public IPv4 range (${raw})` };
+    if (blockedV4.check(raw, "ipv4")) return { ok: false, reason: `non-public IPv4 range (${raw})` };
     return { ok: true, family: 4 };
   }
   const inner = embeddedIPv4(raw);
   if (inner) return { ok: false, reason: `IPv6 address embedding IPv4 ${inner} is not allowed` };
-  if (blocked.check(raw, "ipv6")) return { ok: false, reason: `non-public IPv6 range (${raw})` };
+  if (blockedV6.check(raw, "ipv6")) return { ok: false, reason: `non-public IPv6 range (${raw})` };
   // Global unicast is 2000::/3; everything else is reserved.
   const first = parseInt(raw.split(":")[0] || "0", 16);
   if (!(first >= 0x2000 && first <= 0x3fff)) return { ok: false, reason: `IPv6 outside global unicast (${raw})` };

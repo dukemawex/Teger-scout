@@ -45,7 +45,7 @@ export function createApp({ cfg, store, runner, offline }: AppDeps) {
     c.header("X-Content-Type-Options", "nosniff");
     c.header("Referrer-Policy", "no-referrer");
     c.header("X-Frame-Options", "DENY");
-    if (!c.req.path.startsWith("/fixtures/")) {
+    if (!c.req.path.startsWith("/fixtures/") && !c.res.headers.has("Content-Security-Policy")) {
       c.header(
         "Content-Security-Policy",
         "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",

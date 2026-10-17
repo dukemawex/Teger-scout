@@ -206,11 +206,14 @@ export function buildReport(input: ReportInput): Report {
           : "Nothing alarming observed during a limited, read-only visit.";
 
   const blockedSub = r ? r.blockedRequests.filter((b) => !b.isDocument).length : 0;
-  const coverage = [
-    `Visited the link once in an isolated CreateOS sandbox with a ${r ? "headless browser" : "browser"} (read-only, no form submission).`,
-    `Network access limited to ${input.authorizedHosts.length} validated host${input.authorizedHosts.length === 1 ? "" : "s"}${input.egressVerified ? "; egress policy read back and bypass probe blocked" : ""}.`,
-    `Inspection script attempts: ${input.attempts}.`,
-  ];
+  const coverage =
+    input.executionMode === "fixture"
+      ? []
+      : [
+          "Visited the link once in an isolated CreateOS sandbox with a headless browser (read-only, no form submission).",
+          `Network access limited to ${input.authorizedHosts.length} validated host${input.authorizedHosts.length === 1 ? "" : "s"}${input.egressVerified ? "; egress policy read back and bypass probe blocked" : ""}.`,
+          `Inspection script attempts: ${input.attempts}.`,
+        ];
   if (r) coverage.push(`Checked title, branding, ${r.forms.length} form${r.forms.length === 1 ? "" : "s"}, redirect chain and page text signals.`);
 
   const limitations = [
