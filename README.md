@@ -8,6 +8,12 @@ Built by **DUKERS LTD** (Emmanuel Effiom Duke) for the CreateOS × Stripe Projec
 
 > Link previewing and phishing detection are not new ideas. What this project explores is the agent write → run → repair loop inside a policy-enforced CreateOS sandbox, with every step recorded as evidence.
 
+## Links
+
+- **Live app (CreateOS):** https://production-teger-scout.tyzo.nodeops.app. Offline fixtures are open to everyone; live scans need the owner's access code because each one creates a billable sandbox.
+- **Stripe Projects share link:** https://projects.dev/s#v1:createos~project,OpenRouter~api
+- Demo script: [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) · Submission draft: [docs/SUBMISSION.md](docs/SUBMISSION.md) · Sponsor checklist: [docs/SPONSOR_CHECKLIST.md](docs/SPONSOR_CHECKLIST.md)
+
 ## Implementation status
 
 See [docs/STATUS.md](docs/STATUS.md) for the exact, evidence-linked status of every feature (live, fixture-based, incomplete, or blocked by credentials or plan limits).

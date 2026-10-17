@@ -1,0 +1,264 @@
+{
+  "id": "rec_repair-demo-delayed",
+  "sourceScanId": "scn_477a985d074d4b2da1589a152f9d0d7f",
+  "sourceDeployment": "https://production-teger-scout.tyzo.nodeops.app",
+  "url": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+  "status": "completed",
+  "verdict": "No obvious warning signs observed",
+  "repairDemo": true,
+  "createdAt": "2026-10-17T21:22:44.693Z",
+  "finishedAt": "2026-10-17T21:23:44.055Z",
+  "sandboxId": "sb-01m55vxtvaj793bp70g3y0076j",
+  "report": {
+    "verdict": "No obvious warning signs observed",
+    "status": "completed",
+    "summary": "Nothing alarming observed during a limited, read-only visit.",
+    "recommendation": "We did not observe common warning signs, but no inspection can guarantee a website is safe. Only continue if you expected this link.",
+    "originalUrl": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+    "finalUrl": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+    "redirectChain": [
+      {
+        "url": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+        "status": 200,
+        "kind": "initial"
+      }
+    ],
+    "title": null,
+    "claimedIdentity": null,
+    "loginForms": [],
+    "warningSigns": [],
+    "blockedDestinations": [],
+    "preview": {
+      "available": true,
+      "artifactId": "art_5cadc9d2a0784eeeb1c6fc49b757cf0a",
+      "width": 1280,
+      "height": 800
+    },
+    "coverage": [
+      "Visited the link once in an isolated CreateOS sandbox with a headless browser (read-only, no form submission).",
+      "Network access limited to 1 validated host; egress policy read back and bypass probe blocked.",
+      "Inspection script attempts: 2.",
+      "Checked title, branding, 0 forms, redirect chain and page text signals."
+    ],
+    "limitations": [
+      "A single visit can miss content shown only to some visitors, devices, or countries.",
+      "No interaction was performed (no clicks, no typing), so later steps of a scam are not observed.",
+      "Some evidence could not be collected (1 extraction error)."
+    ],
+    "executionMode": "recorded"
+  },
+  "events": [
+    {
+      "stage": "validate",
+      "level": "info",
+      "message": "Checking the link against the network policy",
+      "ts": "2026-10-17T21:22:44.699Z"
+    },
+    {
+      "stage": "validate",
+      "level": "success",
+      "message": "Destination allowed: production-teger-scout.tyzo.nodeops.app → 104.26.8.176, 172.67.71.240, 104.26.9.176 (public addresses only)",
+      "ts": "2026-10-17T21:22:44.822Z"
+    },
+    {
+      "stage": "write",
+      "level": "warn",
+      "message": "Repair demonstration: attempt 1 uses a deliberately defective seeded draft (see docs/REPAIR_DEMO.md)",
+      "ts": "2026-10-17T21:22:44.824Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "info",
+      "message": "Creating CreateOS sandbox (desktop:1, s-1vcpu-1gb) with 6 egress rules",
+      "data": {
+        "egress": [
+          "104.26.8.176:443",
+          "104.26.8.176:80",
+          "104.26.9.176:443",
+          "104.26.9.176:80",
+          "172.67.71.240:443",
+          "172.67.71.240:80"
+        ]
+      },
+      "ts": "2026-10-17T21:22:44.826Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "info",
+      "message": "Sandbox sb-01m55vxtvaj793bp70g3y0076j is running",
+      "ts": "2026-10-17T21:22:45.808Z"
+    },
+    {
+      "stage": "policy",
+      "level": "success",
+      "message": "Egress policy read back from CreateOS and direct-connection probe blocked",
+      "data": {
+        "effective": [
+          "104.26.8.176:443",
+          "104.26.8.176:80",
+          "104.26.9.176:443",
+          "104.26.9.176:80",
+          "172.67.71.240:443",
+          "172.67.71.240:80"
+        ],
+        "probe": [
+          {
+            "target": "1.1.1.1:443",
+            "reachable": false
+          },
+          {
+            "target": "8.8.8.8:53",
+            "reachable": false
+          }
+        ]
+      },
+      "ts": "2026-10-17T21:22:47.239Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "info",
+      "message": "Sandbox runtime: Ubuntu 24.04.4 LTS; Node v22.23.2; /usr/bin/google-chrome Google Chrome 152.0.7977.82",
+      "data": {
+        "node": "v22.23.2",
+        "chrome": "/usr/bin/google-chrome Google Chrome 152.0.7977.82",
+        "os": "Ubuntu 24.04.4 LTS"
+      },
+      "ts": "2026-10-17T21:22:47.815Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "success",
+      "message": "Trusted helper and task file installed in the sandbox",
+      "ts": "2026-10-17T21:22:47.863Z"
+    },
+    {
+      "stage": "run",
+      "level": "info",
+      "message": "Attempt 1: running seeded draft in the sandbox (limit 60s)",
+      "ts": "2026-10-17T21:22:47.874Z"
+    },
+    {
+      "stage": "run",
+      "level": "warn",
+      "message": "Attempt 1 failed: script exited with status 1; result.json missing (writeResult was not called or failed); screenshot check: screenshot file missing",
+      "data": {
+        "exitCode": 1,
+        "stderr": "file:///opt/teger/scout-kit.mjs:284\n        throw new Error(`page.evaluate failed: ${d.exception?.description ?? d.text}`.slice(0, 1000));\n              ^\n\nError: page.evaluate failed: TypeError: Cannot read properties of null (reading 'action')\n    at <anonymous>:3:22\n    at <anonymous>:4:3\n    at Object.evaluate (file:///opt/teger/scout-kit.mjs:284:15)\n    at async file:///opt/teger/inspect.mjs:17:14\n\nNode.js v22.23.2\n"
+      },
+      "ts": "2026-10-17T21:22:55.496Z"
+    },
+    {
+      "stage": "repair",
+      "level": "info",
+      "message": "Sending the error and the script back to the agent for a targeted repair",
+      "ts": "2026-10-17T21:22:55.499Z"
+    },
+    {
+      "stage": "repair",
+      "level": "success",
+      "message": "Agent repair: The script crashed because it queried a form with a brittle selector that isn't present yet; I moved screenshot capture before extraction, wrapped all DOM extraction in try/catch so one failure can't lose the preview, and used resilient selectors plus shadow-Root traversal for forms and inputs.",
+      "ts": "2026-10-17T21:23:37.816Z"
+    },
+    {
+      "stage": "run",
+      "level": "info",
+      "message": "Attempt 2: running agent-written script in the sandbox (limit 60s)",
+      "ts": "2026-10-17T21:23:37.916Z"
+    },
+    {
+      "stage": "run",
+      "level": "success",
+      "message": "Attempt 2 passed every acceptance check",
+      "ts": "2026-10-17T21:23:43.766Z"
+    },
+    {
+      "stage": "collect",
+      "level": "warn",
+      "message": "Trusted kit evidence corrected 1 script claim(s)",
+      "data": {
+        "corrections": [
+          "kit found 1 password field(s) the script missed"
+        ]
+      },
+      "ts": "2026-10-17T21:23:43.767Z"
+    },
+    {
+      "stage": "collect",
+      "level": "info",
+      "message": "Storing the verified screenshot in controlled storage",
+      "ts": "2026-10-17T21:23:43.769Z"
+    },
+    {
+      "stage": "collect",
+      "level": "success",
+      "message": "Screenshot verified (1280x800, 31 KB)",
+      "ts": "2026-10-17T21:23:43.772Z"
+    },
+    {
+      "stage": "report",
+      "level": "info",
+      "message": "Scoring evidence with deterministic rules",
+      "ts": "2026-10-17T21:23:43.774Z"
+    },
+    {
+      "stage": "report",
+      "level": "success",
+      "message": "Verdict: No obvious warning signs observed",
+      "ts": "2026-10-17T21:23:43.778Z"
+    },
+    {
+      "stage": "cleanup",
+      "level": "info",
+      "message": "Destroying sandbox sb-01m55vxtvaj793bp70g3y0076j",
+      "ts": "2026-10-17T21:23:43.781Z"
+    },
+    {
+      "stage": "cleanup",
+      "level": "success",
+      "message": "Sandbox destroyed",
+      "ts": "2026-10-17T21:23:44.053Z"
+    }
+  ],
+  "attempts": [
+    {
+      "n": 1,
+      "author": "seeded",
+      "script": "// SEEDED DRAFT FOR THE REPAIR DEMONSTRATION. NOT WRITTEN BY THE MODEL.\n//\n// Deliberate, documented defect (see docs/REPAIR_DEMO.md): the script assumes\n// the page's login form is present immediately and has id=\"login\". On the\n// /fixtures/delayed page the form appears after three seconds inside a\n// shadow root, so `document.querySelector(\"form#login\")` is null and reading\n// `.action` throws a TypeError. The script also captures the screenshot only\n// after extraction, so the failure loses the preview too.\n//\n// The live agent receives the real stderr and this code, and must repair it.\nimport { task, launchBrowser, writeResult, SCREENSHOT_PATH } from \"/opt/teger/scout-kit.mjs\";\n\nconst browser = await launchBrowser();\nconst page = await browser.newPage();\nconst nav = await page.goto(task.url);\n\nconst form = await page.evaluate(() => {\n  const f = document.querySelector(\"form#login\");\n  return { action: f.action, method: f.method };\n});\n\nconst shot = await page.screenshot();\nawait writeResult({\n  requestedUrl: task.url,\n  finalUrl: nav.finalUrl,\n  httpStatus: nav.status,\n  redirectChain: page.redirectChain(),\n  title: await page.evaluate(() => document.title),\n  claimedIdentity: { siteName: null, brandMentions: [], evidence: [] },\n  forms: [{ action: form.action, method: form.method, hasPasswordField: true, inputTypes: [], inputNames: [], crossOriginAction: false }],\n  loginFormDetected: true,\n  textSignals: { urgencyPhrases: [], credentialRequests: [], instructionsToAI: [] },\n  visibleTextSample: \"\",\n  externalScriptOrigins: [],\n  blockedRequests: page.blockedRequests(),\n  contactedHosts: page.contactedHosts(),\n  screenshot: { path: SCREENSHOT_PATH, bytes: shot.bytes },\n  screenshotError: null,\n  extractionErrors: [],\n  notes: [],\n});\nawait browser.close();\n",
+      "sha256": "ad3553c9d124ffd9074633ab8d424814bee7042681634ffb1ef0ce319d715aa2",
+      "explanation": "Seeded draft for the repair demonstration. Contains a deliberate, documented defect. Not written by the model.",
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "file:///opt/teger/scout-kit.mjs:284\n        throw new Error(`page.evaluate failed: ${d.exception?.description ?? d.text}`.slice(0, 1000));\n              ^\n\nError: page.evaluate failed: TypeError: Cannot read properties of null (reading 'action')\n    at <anonymous>:3:22\n    at <anonymous>:4:3\n    at Object.evaluate (file:///opt/teger/scout-kit.mjs:284:15)\n    at async file:///opt/teger/inspect.mjs:17:14\n\nNode.js v22.23.2\n",
+      "outcome": "failed",
+      "failedChecks": [
+        "script exited with status 1",
+        "result.json missing (writeResult was not called or failed)",
+        "screenshot check: screenshot file missing"
+      ],
+      "durationMs": 7525.565,
+      "startedAt": "2026-10-17T21:22:47.865Z"
+    },
+    {
+      "n": 2,
+      "author": "model",
+      "script": "import { task, launchBrowser, writeResult, clip, SCREENSHOT_PATH } from \"/opt/teger/scout-kit.mjs\";\n\nconst browser = await launchBrowser();\nconst page = await browser.newPage();\nconst nav = await page.goto(task.url);\n\n// Always capture the screenshot early so a later extraction failure cannot\n// lose the preview (fixes the prior crash that happened before screenshot).\nlet screenshot = { path: SCREENSHOT_PATH, bytes: 0 };\nlet screenshotError = null;\ntry {\n  const shot = await page.screenshot();\n  screenshot = { path: shot.path, bytes: shot.bytes };\n} catch (e) {\n  screenshotError = String(e?.message ?? e);\n}\n\n// Give slow pages a bounded chance to render.\ntry {\n  await page.waitFor(() => document.readyState === \"complete\" && document.body, { timeoutMs: 4000, intervalMs: 100 });\n} catch {\n  // fall through; continue with whatever rendered\n}\n\nconst extractionErrors = [];\nlet title = null;\nlet claimedIdentity = { siteName: null, brandMentions: [], evidence: [] };\nlet forms = [];\nlet loginFormDetected = false;\nlet textSignals = { urgencyPhrases: [], credentialRequests: [], instructionsToAI: [] };\nlet visibleTextSample = \"\";\nlet externalScriptOrigins = [];\n\ntry {\n  const doc = await page.evaluate(() => {\n    const walk = (el) => {\n      const out = [];\n      const walker = document.createTreeWalker(el, NodeFilter.SHOW_ELEMENT, {\n        acceptNode(n) { return (n.tagName === \"SCRIPT\" || n.hidden) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }\n      });\n      let n;\n      while ((n = walker.nextNode())) out.push(n);\n      return out;\n    };\n\n    const meta = (name) => {\n      const m = document.querySelector(`meta[property=\"${name}\"],meta[name=\"${name}\"]`);\n      return m ? m.content : null;\n    };\n\n    const siteName = meta(\"og:site_name\") || meta(\"application-name\");\n    const brandMentions = [];\n    const evidence = [];\n    if (document.title) { brandMentions.push(document.title); evidence.push(`<title>: ${document.title}`); }\n    const logo = document.querySelector(\"img[alt][src*='logo' i], img[alt], [data-logo] img, .logo img\");\n    if (logo && logo.alt) { brandMentions.push(logo.alt); evidence.push(`logo alt: ${logo.alt}`); }\n    if (siteName) { brandMentions.push(siteName); evidence.push(`meta: ${siteName}`); }\n\n    const formsArr = [];\n    const formEls = Array.from(document.forms);\n    // also catch forms hidden in open shadow roots\n    const roots = Array.from(document.querySelectorAll(\"*\")).flatMap((e) => {\n      const sr = e.shadowRoot;\n      return sr ? [sr] : [];\n    });\n    for (const r of roots) {\n      try { Array.from(r.querySelectorAll(\"form\")).forEach((f) => formEls.push(f)); } catch {}\n    }\n    const seenPw = [];\n    for (const f of formEls) {\n      const inputs = [];\n      try { Array.from(f.elements).forEach((i) => { if (i.tagName === \"INPUT\" || i.tagName === \"TEXTAREA\" || i.tagName === \"SELECT\") inputs.push(i); }); } catch {}\n      const pw = inputs.some((i) => i.type === \"password\");\n      if (pw) seenPw.push(f);\n      let action = null;\n      try { action = new URL(f.getAttribute(\"action\") || location.href, location.href).href; } catch { action = f.getAttribute(\"action\"); }\n      const method = (f.getAttribute(\"method\") || \"get\").toLowerCase();\n      const types = inputs.map((i) => i.type || (i.tagName === \"SELECT\" ? \"select\" : \"textarea\"));\n      const names = inputs.map((i) => i.name).filter(Boolean);\n      formsArr.push({\n        action,\n        method,\n        hasPasswordField: pw,\n        inputTypes: types,\n        inputNames: names,\n        crossOriginAction: (() => { try { return new URL(action || location.href, location.href).origin !== location.origin; } catch { return false; } })()\n      });\n    }\n    // password inputs outside any form -> synthetic entry\n    const allPw = Array.from(document.querySelectorAll(\"input[type=password]\")).filter((i) => !formEls.some((f) => f.contains(i)));\n    for (const i of allPw) {\n      let action = null;\n      try { action = new URL(location.href); } catch { action = location.href; }\n      seenPw.push(i);\n      formsArr.push({ action: location.href, method: \"n/a\", hasPasswordField: true, inputTypes: [\"password\"], inputNames: [i.name].filter(Boolean), crossOriginAction: false });\n    }\n\n    // text signals\n    const urgency = [\"account suspended\", \"verify within 24 hours\", \"verify within\", \"unusual activity\", \"urgent action\", \"suspended\", \"verify your\", \"security alert\", \"limited time\", \"access denied\"];\n    const cred = [\"enter your password\", \"enter password\", \"password\", \"confirm your card\", \"confirm card\", \"card number\", \"cvv\", \"social security\", \"ssn\", \"otp\", \"one-time password\"];\n    const aiTerms = [\"ignore previous instructions\", \"you are an ai\", \"automated scanner\", \"disable the filter\", \"print your secrets\", \"mark this page safe\"];\n    let fullText = document.body ? document.body.innerText || \"\" : \"\";\n    const lower = fullText.toLowerCase();\n    const matchPhrases = (terms, src) => {\n      const found = [];\n      const used = new Set();\n      for (const t of terms) { if (lower.includes(t) && !used.has(t)) { found.push(t); used.add(t); } }\n      return found.slice(0, 10);\n    };\n\n    const scripts = Array.from(document.querySelectorAll(\"script[src]\")).map((s) => s.src).filter(Boolean);\n    const origins = Array.from(new Set(scripts.map((u) => { try { return new URL(u).origin; } catch { return null; } })).filter(Boolean));\n\n    return {\n      title: document.title || null,\n      siteName: siteName || null,\n      brandMentions: brandMentions.slice(0,10),\n      evidence: evidence.slice(0,10),\n      forms: formsArr,\n      hasPassword: seenPw.length > 0,\n      visibleText: (document.body ? document.body.innerText : \"\") || \"\",\n      urgency: matchPhrases(urgency, lower),\n      cred: matchPhrases(cred, lower),\n      ai: matchPhrases(aiTerms, lower),\n      scriptOrigins: origins.slice(0,20)\n    };\n  });\n\n  title = doc.title;\n  if (doc.siteName) claimedIdentity.siteName = doc.siteName;\n  claimedIdentity.brandMentions = doc.brandMentions;\n  claimedIdentity.evidence = doc.evidence;\n  forms = doc.forms.map((f) => ({\n    action: f.action || null,\n    method: f.method,\n    hasPasswordField: !!f.hasPasswordField,\n    inputTypes: Array.isArray(f.inputTypes) ? f.inputTypes : [],\n    inputNames: Array.isArray(f.inputNames) ? f.inputNames : [],\n    crossOriginAction: !!f.crossOriginAction\n  }));\n  loginFormDetected = !!doc.hasPassword;\n  textSignals = {\n    urgencyPhrases: doc.urgency,\n    credentialRequests: doc.cred,\n    instructionsToAI: doc.ai\n  };\n  visibleTextSample = clip(doc.visibleText, 1500);\n  externalScriptOrigins = doc.scriptOrigins;\n} catch (e) {\n  extractionErrors.push(String(e?.message ?? e));\n}\n\nawait writeResult({\n  requestedUrl: task.url,\n  finalUrl: nav?.finalUrl ?? null,\n  httpStatus: nav?.status ?? null,\n  redirectChain: page.redirectChain(),\n  title,\n  claimedIdentity,\n  forms,\n  loginFormDetected,\n  textSignals,\n  visibleTextSample,\n  externalScriptOrigins,\n  blockedRequests: page.blockedRequests(),\n  contactedHosts: page.contactedHosts(),\n  screenshot,\n  screenshotError,\n  extractionErrors,\n  notes: []\n});\nawait browser.close();\n",
+      "sha256": "4418cf4bc589fab8172a5ff03fc0a004d8e6e7027c6b2e9ba2f5ff4118f4de3c",
+      "explanation": "The script crashed because it queried a form with a brittle selector that isn't present yet; I moved screenshot capture before extraction, wrapped all DOM extraction in try/catch so one failure can't lose the preview, and used resilient selectors plus shadow-Root traversal for forms and inputs.",
+      "exitCode": 0,
+      "stdout": "TEGER_RESULT_WRITTEN 2810\n",
+      "stderr": "",
+      "outcome": "passed",
+      "failedChecks": [],
+      "durationMs": 5731.191,
+      "startedAt": "2026-10-17T21:23:37.820Z"
+    }
+  ],
+  "screenshot": {
+    "file": "repair-demo-delayed.png",
+    "sha256": "93fffc9bd040c7de37bb580cace1d881a1c8832ed7c84d81d87d553e53322fb6",
+    "width": 1280,
+    "height": 800,
+    "bytes": 31870,
+    "artifactId": "art_5cadc9d2a0784eeeb1c6fc49b757cf0a"
+  }
+}

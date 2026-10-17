@@ -63,7 +63,14 @@ export const resultSchema = z.object({
   // Added by the trusted kit's writeResult, not by the generated script.
   kitEvidence: z
     .union([
-      z.object({ text: str(20000), passwordInputs: z.number().int().min(0), forms: z.number().int().min(0), title: str(500).nullable(), url: str(2048) }),
+      z.object({
+        text: str(20000),
+        passwordInputs: z.number().int().min(0),
+        forms: z.number().int().min(0),
+        formList: z.array(formSchema).max(30).optional(),
+        title: str(500).nullable(),
+        url: str(2048),
+      }),
       z.object({ error: str(400) }),
     ])
     .nullable()
@@ -92,6 +99,28 @@ export function reconcileWithKit(r: InspectionResult): { result: InspectionResul
     credentialRequests: verify("credential request", r.textSignals.credentialRequests),
     instructionsToAI: verify("AI-directed text", r.textSignals.instructionsToAI),
   };
+  // Deterministic patterns over the kit's text, so the verdict does not depend
+  // on how thorough the generated extraction code happened to be.
+  const scan = (patterns: RegExp[]) => [...new Set(patterns.flatMap((re) => kit.text.match(re) ?? []).map((m) => m.trim().slice(0, 120)))];
+  const merge = (verified: string[], found: string[], label: string) => {
+    const extra = found.filter((f) => !verified.some((v) => v.toLowerCase() === f.toLowerCase()));
+    if (extra.length) corrections.push(`kit text scan added ${extra.length} ${label}`);
+    return [...verified, ...extra].slice(0, 10);
+  };
+  textSignals.urgencyPhrases = merge(textSignals.urgencyPhrases, scan(URGENCY_PATTERNS), "urgency phrase(s)");
+  textSignals.credentialRequests = merge(textSignals.credentialRequests, scan(CREDENTIAL_PATTERNS), "credential request(s)");
+  textSignals.instructionsToAI = merge(textSignals.instructionsToAI, scan(AI_DIRECTED_PATTERNS), "AI-directed phrase(s)");
+
+  let forms = r.forms;
+  if (kit.formList) {
+    const key = (f: { action: string | null; hasPasswordField: boolean }) => `${f.action}|${f.hasPasswordField}`;
+    const missing = kit.formList.filter((k) => !r.forms.some((f) => key(f) === key(k)));
+    if (missing.length) corrections.push(`kit found ${missing.length} form(s) the script did not report (e.g. inside shadow roots)`);
+    forms = [...r.forms.filter((f) => kit.formList!.some((k) => key(k) === key(f))), ...kit.formList.filter((k) => !r.forms.some((f) => key(f) === key(k)))].slice(0, 30);
+    const phantom = r.forms.length - r.forms.filter((f) => kit.formList!.some((k) => key(k) === key(f))).length;
+    if (phantom > 0) corrections.push(`dropped ${phantom} form(s) reported by the script that the kit did not observe`);
+  }
+
   let loginFormDetected = r.loginFormDetected;
   if (kit.passwordInputs > 0 && !loginFormDetected) {
     loginFormDetected = true;
@@ -100,8 +129,20 @@ export function reconcileWithKit(r: InspectionResult): { result: InspectionResul
     loginFormDetected = false;
     corrections.push("script reported a login form but the kit found no password field");
   }
-  return { result: { ...r, textSignals, loginFormDetected }, corrections };
+  return { result: { ...r, textSignals, loginFormDetected, forms }, corrections };
 }
+
+const URGENCY_PATTERNS = [
+  /account (?:has been |is |was )?(?:suspended|locked|disabled|restricted|on hold)/gi,
+  /verify (?:your account )?within \d+ ?(?:hours?|days?|minutes?)/gi,
+  /(?:pay|respond|act|confirm) within \d+ ?(?:hours?|days?|minutes?)/gi,
+  /unusual (?:sign-?in )?activity/gi,
+  /permanent(?:ly)? (?:closure|closed|deleted|suspended)/gi,
+  /immediate action required/gi,
+  /(?:parcel|package|delivery) (?:is )?(?:on hold|held|suspended)/gi,
+];
+const CREDENTIAL_PATTERNS = [/enter your password/gi, /confirm your (?:card|card number|identity|password)/gi, /card (?:pin|number)/gi, /\bcvv\b/gi, /one-?time (?:code|password)/gi, /social security number/gi, /bank verification number|\bbvn\b/gi];
+const AI_DIRECTED_PATTERNS = [/ignore (?:all )?(?:previous|prior) instructions/gi, /note to (?:ai|llm)[^.]{0,80}/gi, /(?:ai|automated) (?:security )?scanners?[^.]{0,60}(?:safe|trusted|verified)/gi, /developer mode/gi, /(?:print|reveal) (?:your )?(?:api keys?|system prompt|secrets?)/gi];
 
 export type InspectionResult = z.infer<typeof resultSchema>;
 

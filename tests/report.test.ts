@@ -159,9 +159,37 @@ describe("trusted kit reconciliation", () => {
       kitEvidence: { text: "Your parcel is on hold. Pay within 12 hours or it is returned.", passwordInputs: 1, forms: 1, title: "Parcel", url: "https://x.example/" },
     });
     const { result, corrections } = reconcileWithKit(r);
-    expect(result.textSignals.urgencyPhrases).toEqual(["pay within 12 hours"]);
+    expect(result.textSignals.urgencyPhrases).toContain("pay within 12 hours");
+    expect(result.textSignals.urgencyPhrases).toContain("parcel is on hold");
     expect(result.textSignals.instructionsToAI).toEqual([]);
     expect(result.loginFormDetected).toBe(true);
-    expect(corrections.length).toBe(3);
+    expect(corrections.some((c) => c.includes("password field"))).toBe(true);
+    expect(corrections.filter((c) => c.startsWith("dropped unverified"))).toHaveLength(2);
+  });
+});
+
+describe("trusted kit evidence drives the verdict", () => {
+  it("uses kit-observed shadow-root forms and text patterns when the script missed them", async () => {
+    const { reconcileWithKit } = await import("../server/scan/contract.js");
+    const { result } = reconcileWithKit(
+      baseResult({
+        forms: [],
+        loginFormDetected: false,
+        kitEvidence: {
+          text: "Your parcel is on hold. SwiftCourier: a customs fee is due. Pay within 12 hours or the parcel is returned. Card number Card PIN",
+          passwordInputs: 1,
+          forms: 1,
+          formList: [{ action: "https://pay.parcel-fee-desk.example/collect", method: "post", hasPasswordField: true, inputTypes: ["email", "text", "password"], inputNames: ["email", "card", "pin"], crossOriginAction: true }],
+          title: "Parcel delivery: action required",
+          url: "https://shop.example.org/",
+        },
+      }),
+    );
+    expect(result.forms).toHaveLength(1);
+    expect(result.loginFormDetected).toBe(true);
+    expect(result.textSignals.urgencyPhrases.join(" ")).toMatch(/within 12 hours/i);
+    const report = buildReport(input({ result }));
+    expect(report.verdict).toBe("High risk");
+    expect(report.warningSigns.map((s) => s.id)).toContain("cross-origin-login");
   });
 });

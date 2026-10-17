@@ -326,8 +326,27 @@ async function kitEvidence() {
       const roots = [document, ...[...document.querySelectorAll("*")].map((el) => el.shadowRoot).filter(Boolean)];
       const text = roots.map((r) => (r === document ? document.documentElement.textContent : r.textContent) || "").join("\n");
       const passwords = roots.reduce((n, r) => n + r.querySelectorAll("input[type=password]").length, 0);
-      const forms = roots.reduce((n, r) => n + r.querySelectorAll("form").length, 0);
-      return { text: text.replace(/\s+/g, " ").slice(0, 20000), passwordInputs: passwords, forms, title: document.title || null, url: location.href };
+      const formList = roots
+        .flatMap((r) => [...r.querySelectorAll("form")])
+        .slice(0, 30)
+        .map((f) => {
+          let action;
+          try {
+            action = new URL(f.getAttribute("action") || location.href, location.href).href;
+          } catch {
+            action = null;
+          }
+          const inputs = [...f.querySelectorAll("input")];
+          return {
+            action,
+            method: (f.getAttribute("method") || "get").toLowerCase().slice(0, 16),
+            hasPasswordField: inputs.some((i) => i.type === "password"),
+            inputTypes: inputs.map((i) => (i.type || "text").slice(0, 40)).slice(0, 60),
+            inputNames: inputs.map((i) => (i.name || i.id || "").slice(0, 120)).slice(0, 60),
+            crossOriginAction: action ? new URL(action).origin !== location.origin : false,
+          };
+        });
+      return { text: text.replace(/\s+/g, " ").slice(0, 20000), passwordInputs: passwords, forms: formList.length, formList, title: document.title || null, url: location.href };
     });
   } catch (e) {
     return { error: String(e.message).slice(0, 300) };
