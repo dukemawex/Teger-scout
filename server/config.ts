@@ -39,7 +39,8 @@ export function loadConfig() {
       perSessionHourlyScans: int("TEGER_SESSION_HOURLY_SCANS", 4),
     },
     // Live scans create billable sandboxes, so they require an access code.
-    liveAccessCode: process.env.TEGER_LIVE_ACCESS_CODE ?? "",
+    // "off" (or empty) disables the code; useful where a platform cannot unset a variable.
+    liveAccessCode: ["", "off", "none", "disabled"].includes((process.env.TEGER_LIVE_ACCESS_CODE ?? "").trim().toLowerCase()) ? "" : (process.env.TEGER_LIVE_ACCESS_CODE ?? ""),
     pilotDomains: (process.env.TEGER_PILOT_DOMAINS ?? "")
       .split(",")
       .map((d) => d.trim().toLowerCase())

@@ -114,3 +114,14 @@ describe("API access control", () => {
     expect(tail.events[0].seq).toBe(3);
   });
 });
+
+describe("optional access code", () => {
+  it("treats TEGER_LIVE_ACCESS_CODE=off as no code required", async () => {
+    const { app, started } = makeApp({ CREATEOS_SANDBOX_API_KEY: "k", EVE_INTERNAL_PASSWORD: "p", TEGER_MODEL_API_KEY: "a", TEGER_LIVE_ACCESS_CODE: "off" });
+    const c = await session(app);
+    const status = (await (await app.request("/api/status", { headers: { cookie: c } })).json()) as { accessCodeRequired: boolean };
+    expect(status.accessCodeRequired).toBe(false);
+    expect((await app.request("/api/scans", post(c, { url: "https://example.org" }))).status).toBe(202);
+    expect(started).toHaveLength(1);
+  });
+});
