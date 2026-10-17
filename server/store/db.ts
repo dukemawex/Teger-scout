@@ -110,9 +110,9 @@ export class Store {
     `);
   }
 
-  createScan(input: { owner: string; mode: ScanMode; urlFull: string; urlRedacted: string; repairDemo: boolean; id?: string }): ScanRow {
+  createScan(input: { owner: string; mode: ScanMode; urlFull: string; urlRedacted: string; repairDemo: boolean; id?: string; createdAt?: string }): ScanRow {
     const id = input.id ?? `scn_${randomUUID().replace(/-/g, "")}`;
-    const ts = now();
+    const ts = input.createdAt ?? now();
     this.db
       .prepare(
         `INSERT INTO scans (id, owner, mode, url_redacted, url_full, status, repair_demo, created_at, updated_at)

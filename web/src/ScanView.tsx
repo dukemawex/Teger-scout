@@ -64,8 +64,29 @@ export function ScanView({ id, status, onBack }: { id: string; status: Status | 
         else setConnection("reconnecting");
       };
     });
+    // Polling fallback: some proxies (e.g. a CDN in front of the API) buffer
+    // event streams. Events are de-duplicated by sequence number.
+    const poll = setInterval(async () => {
+      if (cancelled) return;
+      try {
+        const { status, events: fresh } = await api.events(id, lastSeq.current);
+        const added = fresh.filter((e) => e.seq > lastSeq.current);
+        if (added.length) {
+          lastSeq.current = added[added.length - 1].seq;
+          setEvents((prev) => [...prev, ...added]);
+          void refresh();
+        }
+        if (!["queued", "running"].includes(status)) {
+          clearInterval(poll);
+          void refresh();
+        }
+      } catch {
+        /* transient; SSE or the next poll will catch up */
+      }
+    }, 4000);
     return () => {
       cancelled = true;
+      clearInterval(poll);
       es?.close();
     };
   }, [id]);
@@ -107,6 +128,8 @@ export function ScanView({ id, status, onBack }: { id: string; status: Status | 
         )}
       </div>
 
+      {scan && <Kpis detail={detail!} events={events} running={running} />}
+
       <div className="scan-grid">
         <aside className="timeline-col" aria-label="Investigation progress">
           <h2 className="col-title">Investigation</h2>
@@ -139,6 +162,44 @@ export function ScanView({ id, status, onBack }: { id: string; status: Status | 
           {report && scan && <Findings report={report} scanId={scan.id} />}
           {detail && <Technical detail={detail} events={events} status={status} />}
         </section>
+      </div>
+    </div>
+  );
+}
+
+function Kpis({ detail, events, running }: { detail: ScanDetail; events: ScanEvent[]; running: boolean }) {
+  const scan = detail.scan;
+  const report = scan.report;
+  const attempts = detail.attempts;
+  const passed = attempts.find((a) => a.outcome === "passed");
+  const policy = events.find((e) => e.stage === "policy" && e.data && typeof e.data === "object" && "effective" in (e.data as object));
+  const rules = policy ? ((policy.data as { effective?: string[] }).effective?.length ?? 0) : null;
+  const end = scan.finishedAt ? new Date(scan.finishedAt).getTime() : Date.now();
+  const seconds = Math.max(0, Math.round((end - new Date(scan.createdAt).getTime()) / 1000));
+  const duration = seconds >= 60 ? `${Math.floor(seconds / 60)}m ${seconds % 60}s` : `${seconds}s`;
+  return (
+    <div className="kpis" role="list" aria-label="Inspection summary">
+      <div className="kpi" role="listitem">
+        <span className="kpi-label">Verdict</span>
+        <span className="kpi-value">{report ? <VerdictPill verdict={report.verdict} /> : running ? "In progress" : scan.status}</span>
+      </div>
+      <div className="kpi" role="listitem">
+        <span className="kpi-label">Script attempts</span>
+        <span className="kpi-value">
+          {attempts.length}
+          <small>{passed ? ` · passed on #${passed.n}` : running ? " · running" : " · none passed"}</small>
+        </span>
+      </div>
+      <div className="kpi" role="listitem">
+        <span className="kpi-label">Egress rules</span>
+        <span className="kpi-value">
+          {rules ?? (scan.mode === "fixture" ? "n/a" : "…")}
+          <small>{rules ? " · verified" : ""}</small>
+        </span>
+      </div>
+      <div className="kpi" role="listitem">
+        <span className="kpi-label">{scan.mode === "live" && running ? "Elapsed" : "Duration"}</span>
+        <span className="kpi-value">{scan.mode === "fixture" ? "offline" : duration}</span>
       </div>
     </div>
   );
@@ -186,8 +247,18 @@ function Findings({ report, scanId }: { report: Report; scanId: string }) {
           )}
         </figcaption>
         {report.preview.available && report.preview.artifactId ? (
-          <div className="preview-frame">
-            <img src={api.artifactUrl(scanId, report.preview.artifactId)} alt={`Screenshot of ${report.title ?? "the inspected page"} captured in the sandbox`} width={report.preview.width} height={report.preview.height} />
+          <div className="browser">
+            <div className="browser-bar" aria-hidden="true">
+              <span className="dots">
+                <i />
+                <i />
+                <i />
+              </span>
+              <span className="address">{report.finalUrl ?? report.originalUrl ?? ""}</span>
+            </div>
+            <div className="preview-frame">
+              <img src={api.artifactUrl(scanId, report.preview.artifactId)} alt={`Screenshot of ${report.title ?? "the inspected page"} captured in the sandbox`} width={report.preview.width} height={report.preview.height} />
+            </div>
           </div>
         ) : (
           <div className="preview-frame unavailable" role="img" aria-label="Preview unavailable">

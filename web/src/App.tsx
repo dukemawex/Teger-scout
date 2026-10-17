@@ -44,21 +44,35 @@ export function App() {
       </a>
       <header className="masthead">
         <button className="brand" onClick={() => navigate(null)} aria-label="Teger Scout home">
-          <Compass size={34} />
+          <span className="brand-mark">
+            <Compass size={28} />
+          </span>
           <span>
             <strong>Teger Scout</strong>
             <em>See where a link leads before you open it.</em>
           </span>
         </button>
-        <ModeBadge status={status} />
+        <nav className="top-nav" aria-label="Status">
+          <ModeBadge status={status} />
+          {scanId && (
+            <button className="primary small" onClick={() => navigate(null)}>
+              New inspection <span aria-hidden="true">→</span>
+            </button>
+          )}
+        </nav>
       </header>
       <main id="main">
         {statusError && <p className="notice error">Could not reach the Teger Scout service: {statusError}</p>}
         {scanId ? <ScanView id={scanId} status={status} onBack={() => navigate(null)} /> : <Home status={status} recent={recent} demos={demos} onOpen={navigate} />}
       </main>
       <footer className="foot">
-        <span>Teger Scout · a DUKERS LTD hackathon prototype · CreateOS × Stripe Projects 2026</span>
-        <span>Inspections are read-only observations, not guarantees of safety.</span>
+        <span className="foot-brand">
+          <span className="brand-mark small">
+            <Compass size={18} />
+          </span>
+          Teger Scout · DUKERS LTD
+        </span>
+        <span>CreateOS × Stripe Projects hackathon 2026 · Inspections are read-only observations, not guarantees of safety.</span>
       </footer>
     </div>
   );
@@ -68,9 +82,9 @@ function ModeBadge({ status }: { status: Status | null }) {
   if (!status) return <span className="mode-badge muted">Connecting…</span>;
   return status.liveAvailable ? (
     <span className="mode-badge live" title={`CreateOS ${status.createosRegion ?? ""} · ${status.sandbox.rootfs} · ${status.sandbox.shape}`}>
-      Live CreateOS execution available
+      <span className="dot" aria-hidden="true" /> Live CreateOS execution
     </span>
   ) : (
-    <span className="mode-badge offline">Offline fixture mode (live execution not configured)</span>
+    <span className="mode-badge offline">Offline fixture mode</span>
   );
 }

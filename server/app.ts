@@ -104,7 +104,7 @@ export function createApp({ cfg, store, runner, offline }: AppDeps) {
         }
       })(),
       sandbox: { rootfs: cfg.createos.rootfs, shape: cfg.createos.shape },
-      model: { provider: cfg.model.provider, id: cfg.model.id || "default" },
+      model: { provider: cfg.model.provider, id: cfg.model.id || "default", fallback: cfg.model.fallback },
       limits: { maxAttempts: cfg.limits.maxAttempts, deadlineSeconds: Math.round(cfg.limits.scanDeadlineMs / 1000) },
       pilotDomains: cfg.pilotDomains,
       stages: STAGES,

@@ -32,7 +32,7 @@ export async function importRecordedDemos(store: Store, cfg: AppConfig, dir: str
   for (const file of entries) {
     const rec = JSON.parse(await readFile(join(dir, file), "utf8")) as RecordedScan;
     if (store.getScan(rec.id)) continue;
-    store.createScan({ id: rec.id, owner: PUBLIC_DEMO_OWNER, mode: "recorded", urlFull: rec.url, urlRedacted: rec.url, repairDemo: rec.repairDemo });
+    store.createScan({ id: rec.id, owner: PUBLIC_DEMO_OWNER, mode: "recorded", urlFull: rec.url, urlRedacted: rec.url, repairDemo: rec.repairDemo, createdAt: rec.createdAt });
     for (const e of rec.events) store.appendEvent(rec.id, e.stage, e.level, e.message, e.data);
     for (const a of rec.attempts) {
       const id = store.startAttempt(rec.id, a.n, a.author, a.script, a.sha256, a.explanation);

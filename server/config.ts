@@ -27,14 +27,7 @@ export function loadConfig() {
       host: process.env.EVE_HOST ?? "http://127.0.0.1:3101",
       password: process.env.EVE_INTERNAL_PASSWORD ?? "",
     },
-    model: {
-      provider: process.env.TEGER_MODEL_PROVIDER ?? "anthropic",
-      // JSON-schema output (eve outputSchema) for providers that support it;
-      // text mode (Explanation line + one fenced block) otherwise.
-      structuredOutput: (process.env.TEGER_MODEL_STRUCTURED ?? (["anthropic", "openai"].includes(process.env.TEGER_MODEL_PROVIDER ?? "anthropic") ? "1" : "0")) === "1",
-      id: process.env.TEGER_MODEL_ID ?? "",
-      configured: Boolean(process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY || process.env.TEGER_MODEL_API_KEY || process.env.OPENROUTER_API_API_KEY || process.env.AI_GATEWAY_API_KEY),
-    },
+    model: describeModel(),
     limits: {
       maxAttempts: int("TEGER_MAX_ATTEMPTS", 3),
       maxHostExpansions: int("TEGER_MAX_HOST_EXPANSIONS", 3),
@@ -56,6 +49,37 @@ export function loadConfig() {
 }
 
 export type AppConfig = ReturnType<typeof loadConfig>;
+
+/** Mirrors agent/agent.ts so /api/status reports the model actually in use. */
+function describeModel() {
+  const requested = process.env.TEGER_MODEL_PROVIDER ?? "auto";
+  const gemini = Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY);
+  const openRouter = Boolean(process.env.TEGER_MODEL_API_KEY || process.env.OPENROUTER_API_API_KEY);
+  const orModel = process.env.TEGER_OPENROUTER_MODEL_ID || process.env.TEGER_MODEL_ID || "poolside/laguna-s-2.1:free";
+  const geminiModel = process.env.TEGER_GEMINI_MODEL_ID || "gemini-flash-latest";
+  let provider = requested;
+  let id = process.env.TEGER_MODEL_ID ?? "";
+  let fallback: string | null = null;
+  if (requested === "auto" || requested === "google") {
+    if (requested === "google" || gemini) {
+      provider = "google";
+      id = requested === "google" ? id || geminiModel : geminiModel;
+      fallback = openRouter ? `openrouter/${orModel}` : null;
+    } else {
+      provider = "openai-compatible";
+      id = orModel;
+    }
+  }
+  return {
+    provider,
+    id,
+    fallback,
+    // JSON-schema output (eve outputSchema) only for providers that support it
+    // and have no text-only fallback; text mode (Explanation + one fenced block) otherwise.
+    structuredOutput: (process.env.TEGER_MODEL_STRUCTURED ?? (["anthropic", "openai"].includes(provider) ? "1" : "0")) === "1",
+    configured: Boolean(process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY || gemini || openRouter || process.env.AI_GATEWAY_API_KEY),
+  };
+}
 
 export function liveExecutionAvailable(cfg: AppConfig) {
   return Boolean(cfg.createos.apiKey && cfg.eve.password && cfg.model.configured);
