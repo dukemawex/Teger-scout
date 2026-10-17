@@ -1,0 +1,32 @@
+
+ RUN  v5.0.5 /home/user/Teger-scout
+
+stdout | tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up
+[live] sandbox sb-01m55rg1hgzrem4zt2rjf6aeja desktop:1 s-1vcpu-1gb https://api-eu.sb.createos.sh
+
+stdout | tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up
+[live] egress read-back {"ok":true,"effective":["104.20.23.154:443","104.20.23.154:80","172.66.147.243:443","172.66.147.243:80"]}
+
+stdout | tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up
+[live] bypass probe {"blocked":true,"details":[{"target":"1.1.1.1:443","reachable":false},{"target":"8.8.8.8:53","reachable":false}]}
+
+stdout | tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up
+[live] runtime {"node":"v22.23.2","chrome":"/usr/bin/google-chrome Google Chrome 152.0.7977.82","os":"Ubuntu 24.04.4 LTS"}
+
+stdout | tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up
+[live] run {"exitCode":0,"execMs":12764.979,"stdout":"TEGER_RESULT_WRITTEN 2011\n","stderr":""}
+
+stdout | tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up
+[live] result {"contractVersion":1,"requestedUrl":"https://example.com/","finalUrl":"https://example.com/","httpStatus":200,"redirectChain":[{"url":"https://example.com/","status":200,"kind":"initial"}],"title":"Example Domain","claimedIdentity":{"siteName":null,"brandMentions":[],"evidence":[]},"forms":[],"loginFormDetected":false,"textSignals":{"urgencyPhrases":[],"credentialRequests":[],"instructionsToAI":[]},"visibleTextSample":"This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes.\n\nهذا النطاق مُخصص 
+
+stdout | tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up
+[live] destroyed sb-01m55rg1hgzrem4zt2rjf6aeja
+
+ ✓ tests/live/live.test.ts > live CreateOS integration > enforces egress, captures a real screenshot, and cleans up 19817ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  20:22:47
+   Duration  20.03s (tests 100%)
+
+exit=0

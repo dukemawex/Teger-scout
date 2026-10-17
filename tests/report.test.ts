@@ -140,3 +140,12 @@ describe("untrusted content handling", () => {
     expect(checkScript("console.log(1)").length).toBeGreaterThan(0);
   });
 });
+
+describe("text-mode proposals", () => {
+  it("extracts the script and explanation from a fenced reply", async () => {
+    const { parseTextProposal } = await import("../server/agent/author.js");
+    const p = parseTextProposal("Explanation: waits for the form.\n```js\nconsole.log(1)\n```\n");
+    expect(p).toEqual({ script: "console.log(1)\n", explanation: "waits for the form." });
+    expect(parseTextProposal("no code here")).toBeNull();
+  });
+});

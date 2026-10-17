@@ -15,11 +15,29 @@ function selectModel() {
     case "openai":
       return openai(id);
     case "openai-compatible": {
+      // OpenRouter-specific request fields: a server-side fallback list (free
+      // models are often rate-limited upstream) and a low reasoning budget so
+      // reasoning models spend their tokens on the script, not on thinking.
+      const fallbacks = (process.env.TEGER_MODEL_FALLBACKS ?? "")
+        .split(",")
+        .map((m) => m.trim())
+        .filter(Boolean);
+      const reasoning = process.env.TEGER_MODEL_REASONING ?? "low";
       const compatible = createOpenAICompatible({
         name: "teger-model",
         baseURL: process.env.TEGER_MODEL_BASE_URL ?? "https://openrouter.ai/api/v1",
-        apiKey: process.env.TEGER_MODEL_API_KEY,
+        // OPENROUTER_API_API_KEY is provisioned by `stripe projects add openrouter/api`.
+        apiKey: process.env.TEGER_MODEL_API_KEY || process.env.OPENROUTER_API_API_KEY,
         includeUsage: true,
+        fetch: async (url, init) => {
+          if (typeof init?.body === "string" && String(url).includes("openrouter.ai")) {
+            const body = JSON.parse(init.body);
+            if (fallbacks.length) body.models = [body.model, ...fallbacks.filter((m) => m !== body.model)];
+            if (reasoning !== "default") body.reasoning = { effort: reasoning };
+            init = { ...init, body: JSON.stringify(body) };
+          }
+          return fetch(url, init);
+        },
       });
       return compatible(id ?? "anthropic/claude-sonnet-5");
     }

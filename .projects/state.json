@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "providers": {
+    "createos": {
+      "name": "createos"
+    },
+    "openrouter": {
+      "name": "OpenRouter"
+    }
+  },
+  "resources": {
+    "createos-plan": {
+      "livemode": true,
+      "name": "createos-plan",
+      "providerName": "createos",
+      "serviceId": "free"
+    },
+    "createos-project": {
+      "livemode": true,
+      "name": "createos-project",
+      "providerName": "createos",
+      "serviceId": "project"
+    },
+    "openrouter-api": {
+      "livemode": true,
+      "name": "openrouter-api",
+      "providerName": "OpenRouter",
+      "serviceId": "api"
+    },
+    "openrouter-plan": {
+      "livemode": true,
+      "name": "openrouter-plan",
+      "providerName": "OpenRouter",
+      "serviceId": "free"
+    }
+  }
+}

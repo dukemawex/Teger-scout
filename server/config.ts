@@ -16,7 +16,9 @@ export function loadConfig() {
     dbPath: process.env.TEGER_DB_PATH ?? `${dataDir}/teger.db`,
     artifactDir: `${dataDir}/artifacts`,
     createos: {
-      apiKey: process.env.CREATEOS_SANDBOX_API_KEY ?? "",
+      // Stripe Projects provisions CREATEOS_PROJECT_API_KEY; it was verified to
+      // authenticate the Sandbox API (whoami) at the EU endpoint.
+      apiKey: process.env.CREATEOS_SANDBOX_API_KEY || process.env.CREATEOS_PROJECT_API_KEY || "",
       baseUrl: process.env.CREATEOS_SANDBOX_BASE_URL ?? "https://api-eu.sb.createos.sh",
       shape: process.env.TEGER_SANDBOX_SHAPE ?? "s-1vcpu-1gb",
       rootfs: process.env.TEGER_SANDBOX_ROOTFS ?? "desktop:1",
@@ -27,8 +29,11 @@ export function loadConfig() {
     },
     model: {
       provider: process.env.TEGER_MODEL_PROVIDER ?? "anthropic",
+      // JSON-schema output (eve outputSchema) for providers that support it;
+      // text mode (Explanation line + one fenced block) otherwise.
+      structuredOutput: (process.env.TEGER_MODEL_STRUCTURED ?? (["anthropic", "openai"].includes(process.env.TEGER_MODEL_PROVIDER ?? "anthropic") ? "1" : "0")) === "1",
       id: process.env.TEGER_MODEL_ID ?? "",
-      configured: Boolean(process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY || process.env.TEGER_MODEL_API_KEY || process.env.AI_GATEWAY_API_KEY),
+      configured: Boolean(process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY || process.env.TEGER_MODEL_API_KEY || process.env.OPENROUTER_API_API_KEY || process.env.AI_GATEWAY_API_KEY),
     },
     limits: {
       maxAttempts: int("TEGER_MAX_ATTEMPTS", 3),

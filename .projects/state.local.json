@@ -1,0 +1,83 @@
+{
+  "version": 4,
+  "project": {
+    "catalog": "prod",
+    "initializedAt": "2026-10-17T20:10:42.785Z",
+    "merchantDisplayName": null,
+    "merchantId": "acct_1QmJ4VJQDWbpVXUN",
+    "projectId": "project_61Vb1taJI8Jto4mzc16Rvh1rH1SQc6d8MlLhIXVs8Tyq",
+    "projectName": "teger-scout"
+  },
+  "providers": {
+    "createos": {
+      "accountRequestId": "facctrq_61Vb1ttdLlmViKI1R16Rvh1rH1SQc6d8MlLhIXVs8IBU",
+      "configuration": {},
+      "linkedAt": "2026-10-17T20:11:02.888Z",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "redirectUrl": null,
+      "requestedAt": "2026-10-17T20:11:02.888Z",
+      "status": "complete"
+    },
+    "openrouter": {
+      "accountRequestId": "facctrq_61Vb1u9nUz4Oij4wd16Rvh1rH1SQc6d8MlLhIXVs8A48",
+      "configuration": {},
+      "linkedAt": "2026-10-17T20:11:19.831Z",
+      "providerId": "prvdr_61URImmFACEuDHEx651IO",
+      "providerName": "OpenRouter",
+      "redirectUrl": null,
+      "requestedAt": "2026-10-17T20:11:19.831Z",
+      "status": "complete"
+    }
+  },
+  "resources": {
+    "createos-plan": {
+      "configuration": {},
+      "createdAt": "2026-10-17T20:11:04.609Z",
+      "lastRevealedAt": "2026-10-17T20:11:04.892Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "createos-plan",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "resourceId": "fres_61Vb1tvREd6k2fnwu16Rvh1rH1SQc6d8MlLhIXVs89Ae",
+      "serviceId": "free"
+    },
+    "createos-project": {
+      "configuration": {},
+      "createdAt": "2026-10-17T20:11:08.878Z",
+      "lastRevealedAt": "2026-10-17T20:11:09.195Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "createos-project",
+      "providerId": "prvdr_61V0eGC6sUPXoATb051se",
+      "providerName": "createos",
+      "resourceId": "fres_61Vb1tzhBk8okVRnE16Rvh1rH1SQc6d8MlLhIXVs849Y",
+      "serviceId": "project"
+    },
+    "openrouter-api": {
+      "configuration": {},
+      "createdAt": "2026-10-17T20:11:25.936Z",
+      "lastRevealedAt": "2026-10-17T20:11:26.340Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "openrouter-api",
+      "providerId": "prvdr_61URImmFACEuDHEx651IO",
+      "providerName": "OpenRouter",
+      "resourceId": "fres_61Vb1uGSnMNRHMhj216Rvh1rH1SQc6d8MlLhIXVs8HeS",
+      "serviceId": "api"
+    },
+    "openrouter-plan": {
+      "configuration": {},
+      "createdAt": "2026-10-17T20:11:21.803Z",
+      "lastRevealedAt": "2026-10-17T20:11:22.166Z",
+      "lastStatus": "complete",
+      "livemode": true,
+      "name": "openrouter-plan",
+      "providerId": "prvdr_61URImmFACEuDHEx651IO",
+      "providerName": "OpenRouter",
+      "resourceId": "fres_61Vb1uC7zVwmpZKEx16Rvh1rH1SQc6d8MlLhIXVs8GNM",
+      "serviceId": "free"
+    }
+  }
+}

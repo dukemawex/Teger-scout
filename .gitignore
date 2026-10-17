@@ -6,11 +6,21 @@ data/
 *.db
 *.db-wal
 *.db-shm
-.env
-.env.*
-!.env.example
 coverage/
 test-results/
 playwright-report/
-.projects/vault/
-.projects/cache/
+
+.projects/cache
+.projects/vault
+.projects/state.test.json
+.projects/state.local.test.json
+.env
+.env.*
+!.env.example
+.createos.json
+
+# Local agent permission grants written by tooling; not for the public repo
+.claude/settings.json
+.cursor/
+.cursorignore
+.env.access
