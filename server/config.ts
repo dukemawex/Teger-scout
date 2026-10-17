@@ -6,6 +6,9 @@ function int(name: string, fallback: number) {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
+/** Identifies the running build in /api/status. */
+export const BUILD_ID = "2026-10-17.open-live-scans";
+
 export function loadConfig() {
   const dataDir = process.env.TEGER_DATA_DIR ?? "./data";
   return {
@@ -39,8 +42,9 @@ export function loadConfig() {
       perSessionHourlyScans: int("TEGER_SESSION_HOURLY_SCANS", 4),
     },
     // Live scans create billable sandboxes, so they require an access code.
-    // "off" (or empty) disables the code; useful where a platform cannot unset a variable.
-    liveAccessCode: ["", "off", "none", "disabled"].includes((process.env.TEGER_LIVE_ACCESS_CODE ?? "").trim().toLowerCase()) ? "" : (process.env.TEGER_LIVE_ACCESS_CODE ?? ""),
+    // Live scans are open by default. Set TEGER_REQUIRE_ACCESS_CODE=1 together
+    // with TEGER_LIVE_ACCESS_CODE to require a code for billable scans.
+    liveAccessCode: process.env.TEGER_REQUIRE_ACCESS_CODE === "1" ? (process.env.TEGER_LIVE_ACCESS_CODE ?? "").trim() : "",
     pilotDomains: (process.env.TEGER_PILOT_DOMAINS ?? "")
       .split(",")
       .map((d) => d.trim().toLowerCase())

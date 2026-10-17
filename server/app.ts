@@ -4,7 +4,7 @@ import { streamSSE } from "hono/streaming";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import type { AppConfig } from "./config.js";
-import { liveExecutionAvailable } from "./config.js";
+import { BUILD_ID, liveExecutionAvailable } from "./config.js";
 import type { ScanRow, Store } from "./store/db.js";
 import { parseTarget, redactUrl, UrlPolicyError } from "./policy/url.js";
 import { fixtureRoutes, FIXTURE_EXAMPLES } from "./fixtures.js";
@@ -94,6 +94,7 @@ export function createApp({ cfg, store, runner, offline }: AppDeps) {
 
   app.get("/api/status", (c) =>
     c.json({
+      build: BUILD_ID,
       liveAvailable: liveExecutionAvailable(cfg),
       accessCodeRequired: Boolean(cfg.liveAccessCode),
       createosRegion: (() => {

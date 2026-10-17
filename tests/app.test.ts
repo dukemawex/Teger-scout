@@ -76,7 +76,7 @@ describe("API access control", () => {
   });
 
   it("requires the access code for cost-incurring live scans", async () => {
-    const { app, started } = makeApp({ CREATEOS_SANDBOX_API_KEY: "k", EVE_INTERNAL_PASSWORD: "p", ANTHROPIC_API_KEY: "a", TEGER_LIVE_ACCESS_CODE: "open-sesame" });
+    const { app, started } = makeApp({ CREATEOS_SANDBOX_API_KEY: "k", EVE_INTERNAL_PASSWORD: "p", ANTHROPIC_API_KEY: "a", TEGER_REQUIRE_ACCESS_CODE: "1", TEGER_LIVE_ACCESS_CODE: "open-sesame" });
     const c = await session(app);
     expect((await app.request("/api/scans", post(c, { url: "https://example.org", accessCode: "wrong" }))).status).toBe(401);
     expect(started).toHaveLength(0);
@@ -116,8 +116,8 @@ describe("API access control", () => {
 });
 
 describe("optional access code", () => {
-  it("treats TEGER_LIVE_ACCESS_CODE=off as no code required", async () => {
-    const { app, started } = makeApp({ CREATEOS_SANDBOX_API_KEY: "k", EVE_INTERNAL_PASSWORD: "p", TEGER_MODEL_API_KEY: "a", TEGER_LIVE_ACCESS_CODE: "off" });
+  it("does not require a code unless TEGER_REQUIRE_ACCESS_CODE=1, even if a stale code is set", async () => {
+    const { app, started } = makeApp({ CREATEOS_SANDBOX_API_KEY: "k", EVE_INTERNAL_PASSWORD: "p", TEGER_MODEL_API_KEY: "a", TEGER_LIVE_ACCESS_CODE: "stale-value" });
     const c = await session(app);
     const status = (await (await app.request("/api/status", { headers: { cookie: c } })).json()) as { accessCodeRequired: boolean };
     expect(status.accessCodeRequired).toBe(false);
