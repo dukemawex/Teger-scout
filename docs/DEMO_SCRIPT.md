@@ -10,6 +10,6 @@
 | 0:35–0:50 | *Running inspection* → attempt 1 fails → *Repairing code* | "The seeded draft crashes: the login form isn't there yet, it appears three seconds later inside a shadow root. The real error goes back to our eve agent as untrusted data. The agent writes a fix." |
 | 0:50–1:05 | Attempt 2 passes → verdict and screenshot appear | "The repaired script runs in the same sandbox. Trusted checks verify the result and the screenshot before we show anything. High risk: it claims to be a courier, asks for a card PIN, and sends it to another website." |
 | 1:05–1:20 | Expand **Technical evidence**: both script versions, stderr, repair explanation, sandbox ID, egress rules | "Everything is evidence: both code versions with hashes, the error, the agent's explanation, the sandbox ID and the network policy. The sandbox has already been destroyed." |
-| 1:20–1:30 | Back to home, point at *Recorded live inspections* and the Stripe Projects badge in README | "CreateOS and the model were provisioned through Stripe Projects. Teger Scout: see where a link leads before you open it." |
+| 1:20–1:30 | Back to home, point at *Recorded live inspections*; cut to `stripe projects status` in a terminal | "CreateOS and the model were provisioned and are tracked through Stripe Projects. Teger Scout: see where a link leads before you open it." |
 
 Do not describe the seeded defect as a real incident. If the live run fails for an external reason, say so and switch to the recorded run, which is labelled "Recorded evidence from a live run".

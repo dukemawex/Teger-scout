@@ -1,0 +1,46 @@
+# Implementation status (17 October 2026)
+
+Legend: **Live** = runs for real against CreateOS and a real model in the deployed app. **Fixture** = offline, labelled, no sandbox, no model. **Incomplete** = partially done or known gaps. **Blocked** = needs an account action or a plan change.
+
+## Live
+
+| Feature | Evidence |
+| --- | --- |
+| Deployed app on CreateOS | https://production-teger-scout.tyzo.nodeops.app (`/api/health` 200; `/api/status` reports live execution, EU sandbox region, access code required) |
+| CreateOS sandbox per scan (EU region, `desktop:1`, `s-1vcpu-1gb`) | Sandboxes `sb-01m55rg1hgzrem4zt2rjf6aeja`, `sb-01m55txjrh9731bwgpxhetrf01`, `sb-01m55vk6qwvf2b2be2dnat7eyk`, `sb-01m55vxtvaj793bp70g3y0076j`, `sb-01m55vzrn7jhz34tjexkzwe5tg`, and those listed under "Live runs" below. All were destroyed at the end of their scans. |
+| Egress applied at creation, read back, bypass probe | `docs/evidence/2026-10-17-live-integration-test.log`, and the "Network policy" section of every live report |
+| Real model writes the script (eve → OpenRouter free models provisioned via Stripe Projects) | Production scan `scn_5e855879fb38433abda0feffc29b67c7` (`recorded/live-fake-bank-login.json`): agent-written script passed on attempt 1 |
+| Real failure → model repair → success | Production scan `scn_6d10440bd2eb425397bb8b12f7193e99` (browser e2e): seeded draft failed (exit 1) → agent repair failed acceptance checks despite exit 0 → second agent repair passed. Production scan `scn_477a985d074d4b2da1589a152f9d0d7f`: seeded draft failed with `TypeError: Cannot read properties of null (reading 'action')`; the agent's repair passed in 5.7 s (`docs/evidence/2026-10-17-prefix-repair-demo-false-negative.json`) |
+| Screenshot captured inside the sandbox and served from controlled storage | Every live report above; artifacts served with `CSP: sandbox`, owner-only |
+| Redirect revalidation, blocked destinations | Unit/integration tests (`tests/controller.test.ts`); the `/fixtures/blocked-redirect` fixture |
+| Cleanup on success, failure, timeout | A local live scan hit the platform's auto-pause during a 7.7-minute model turn and still ended with "Sandbox destroyed" |
+| Access control, rate limits, access code for billable scans | `tests/app.test.ts`; production requires the code |
+| Refresh/reconnect | SSE with `Last-Event-ID` replay plus stored history (`tests/app.test.ts`) |
+
+## Live runs on production (fresh browser or API sessions)
+
+| Scan | Fixture | Attempts | Verdict | Notes |
+| --- | --- | --- | --- | --- |
+| `scn_6d10440bd2eb425397bb8b12f7193e99` | `/fixtures/delayed` (repair demo) | seeded ✗ → agent ✗ (exit 0, failed checks) → agent ✓ | Suspicious | Browser e2e. Showed two evidence-quality bugs (screenshot before late form; unverified AI-directed text), fixed afterwards |
+| `scn_477a985d074d4b2da1589a152f9d0d7f` | `/fixtures/delayed` (repair demo) | seeded ✗ → agent ✓ | No obvious warning signs (**false negative**) | Model's extraction missed the shadow-root form. Fixed by making the verdict rest on trusted kit evidence. Kept as evidence |
+| `scn_5e855879fb38433abda0feffc29b67c7` | `/fixtures/login` | agent ✓ | High risk | Recorded demo `rec_live-fake-bank-login` |
+
+## Fixture
+
+- Offline fixture mode for all six demonstration pages (`fixtures/offline/`), recorded locally with the human-written reference script and local Chromium. Labelled "OFFLINE FIXTURE (NO SANDBOX, NO MODEL)" everywhere.
+
+## Incomplete / limitations
+
+- **Model speed and availability**: the owner chose free OpenRouter models. They are frequently rate-limited upstream (HTTP 429) or slow (one turn took 7.7 minutes). The agent uses OpenRouter's server-side fallback list and a 20-minute scan deadline. A scan can take from about 1 minute to well over 10. Free models also don't support JSON-schema output, so the agent replies in a text contract (an `Explanation:` line plus one fenced script) that trusted code parses and validates.
+- **Persistence**: SQLite on the container disk survives refreshes and reconnects but not redeploys. No provisioned database yet.
+- **Previews of real sites**: subresources from hosts other than the navigation hosts are blocked by policy, so third-party CSS, fonts and images are missing.
+- **IPv6-only sites** are refused in this pilot.
+- **Evidence source**: the verdict uses trusted kit evidence (forms across shadow roots, page text patterns). Model-reported text signals are kept only if the kit text contains them. Brand/claimed-identity extraction still comes from the model's script, so it can be noisy.
+- Not implemented, so no UI for them: sandbox fork/pause demonstrations, live desktop observation, CreateOS live URL report viewer.
+- **License**: `LICENSE.md` is a placeholder; the owner should choose a license.
+
+## Blocked / owner actions
+
+- **Leaderboard submission** (https://projects.dev/leaderboard) and any organizer form must be submitted by the owner. The draft is in `docs/SUBMISSION.md`. **Not submitted.**
+- **Default branch**: the code is on `claude/teger-scout-hackathon-o3923q`; `main` only has the initial LICENSE commit. The owner should merge the branch (or ask for a pull request) so the repository's landing page shows the project.
+- **Free plan limits**: 1 concurrent sandbox and 10 creates per 24 h. The deployment caps live scans per day below that.

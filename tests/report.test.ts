@@ -193,3 +193,19 @@ describe("trusted kit evidence drives the verdict", () => {
     expect(report.warningSigns.map((s) => s.id)).toContain("cross-origin-login");
   });
 });
+
+describe("claimed identity", () => {
+  it("does not treat generic page headings as brand claims", () => {
+    const r = buildReport(
+      input({
+        result: baseResult({
+          claimedIdentity: { siteName: "Account Center", brandMentions: ["Parcel delivery: action required"], evidence: [] },
+          loginFormDetected: true,
+          forms: [{ action: "https://shop.example.org/login", method: "post", hasPasswordField: true, inputTypes: [], inputNames: [], crossOriginAction: false }],
+        }),
+      }),
+    );
+    expect(r.claimedIdentity).toBeNull();
+    expect(r.warningSigns.some((s) => s.id === "brand-mismatch-login")).toBe(false);
+  });
+});

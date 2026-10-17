@@ -1,0 +1,300 @@
+{
+  "id": "rec_repair-demo-delayed",
+  "sourceScanId": "scn_536ff05aea8e4d74a8ff09b9264e6c2e",
+  "sourceDeployment": "https://production-teger-scout.tyzo.nodeops.app",
+  "url": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+  "status": "completed",
+  "verdict": "High risk",
+  "repairDemo": true,
+  "createdAt": "2026-10-17T21:27:33.073Z",
+  "finishedAt": "2026-10-17T21:28:30.229Z",
+  "sandboxId": "sb-01m55w6m3cpryh1220rkr6e4ab",
+  "report": {
+    "verdict": "High risk",
+    "status": "completed",
+    "summary": "2 serious warning signs observed.",
+    "recommendation": "Do not open this link or enter any information. If it claims to be from a company you use, go to that company's website by typing its address yourself.",
+    "originalUrl": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+    "finalUrl": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+    "redirectChain": [
+      {
+        "url": "https://production-teger-scout.tyzo.nodeops.app/fixtures/delayed",
+        "status": 200,
+        "kind": "initial"
+      }
+    ],
+    "title": "Parcel delivery: action required",
+    "claimedIdentity": {
+      "name": "Parcel delivery: action required",
+      "supported": false,
+      "evidence": []
+    },
+    "loginForms": [
+      {
+        "action": "https://pay.parcel-fee-desk.example/collect",
+        "method": "POST",
+        "crossOrigin": true,
+        "hasPassword": true
+      }
+    ],
+    "warningSigns": [
+      {
+        "id": "cross-origin-login",
+        "severity": "high",
+        "title": "Login form sends data to another website",
+        "detail": "The password form submits to pay.parcel-fee-desk.example, not the site you are viewing."
+      },
+      {
+        "id": "brand-mismatch-login",
+        "severity": "high",
+        "title": "Claims to be “Parcel delivery: action required” but is hosted elsewhere",
+        "detail": "The page shows Parcel delivery: action required branding and asks for a password, but the website is nodeops.app."
+      },
+      {
+        "id": "urgency",
+        "severity": "medium",
+        "title": "Pressure or urgency language",
+        "detail": "Found: “Pay within 12 hours”, “parcel is on hold”"
+      },
+      {
+        "id": "credential-request",
+        "severity": "medium",
+        "title": "Asks for sensitive details",
+        "detail": "Found: “Card number”, “Card PIN”"
+      }
+    ],
+    "blockedDestinations": [],
+    "preview": {
+      "available": true,
+      "artifactId": "art_f8d06cb9806c4b3b9c3fb3aeeddfc5d4",
+      "width": 1280,
+      "height": 800
+    },
+    "coverage": [
+      "Visited the link once in an isolated CreateOS sandbox with a headless browser (read-only, no form submission).",
+      "Network access limited to 1 validated host; egress policy read back and bypass probe blocked.",
+      "Inspection script attempts: 2.",
+      "Checked title, branding, 1 form, redirect chain and page text signals."
+    ],
+    "limitations": [
+      "A single visit can miss content shown only to some visitors, devices, or countries.",
+      "No interaction was performed (no clicks, no typing), so later steps of a scam are not observed."
+    ],
+    "executionMode": "recorded"
+  },
+  "events": [
+    {
+      "stage": "validate",
+      "level": "info",
+      "message": "Checking the link against the network policy",
+      "ts": "2026-10-17T21:27:33.077Z"
+    },
+    {
+      "stage": "validate",
+      "level": "success",
+      "message": "Destination allowed: production-teger-scout.tyzo.nodeops.app → 104.26.9.176, 172.67.71.240, 104.26.8.176 (public addresses only)",
+      "ts": "2026-10-17T21:27:33.192Z"
+    },
+    {
+      "stage": "write",
+      "level": "warn",
+      "message": "Repair demonstration: attempt 1 uses a deliberately defective seeded draft (see docs/REPAIR_DEMO.md)",
+      "ts": "2026-10-17T21:27:33.195Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "info",
+      "message": "Creating CreateOS sandbox (desktop:1, s-1vcpu-1gb) with 6 egress rules",
+      "data": {
+        "egress": [
+          "104.26.8.176:443",
+          "104.26.8.176:80",
+          "104.26.9.176:443",
+          "104.26.9.176:80",
+          "172.67.71.240:443",
+          "172.67.71.240:80"
+        ]
+      },
+      "ts": "2026-10-17T21:27:33.198Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "info",
+      "message": "Sandbox sb-01m55w6m3cpryh1220rkr6e4ab is running",
+      "ts": "2026-10-17T21:27:33.807Z"
+    },
+    {
+      "stage": "policy",
+      "level": "success",
+      "message": "Egress policy read back from CreateOS and direct-connection probe blocked",
+      "data": {
+        "effective": [
+          "104.26.8.176:443",
+          "104.26.8.176:80",
+          "104.26.9.176:443",
+          "104.26.9.176:80",
+          "172.67.71.240:443",
+          "172.67.71.240:80"
+        ],
+        "probe": [
+          {
+            "target": "1.1.1.1:443",
+            "reachable": false
+          },
+          {
+            "target": "8.8.8.8:53",
+            "reachable": false
+          }
+        ]
+      },
+      "ts": "2026-10-17T21:27:35.126Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "info",
+      "message": "Sandbox runtime: Ubuntu 24.04.4 LTS; Node v22.23.2; /usr/bin/google-chrome Google Chrome 152.0.7977.82",
+      "data": {
+        "node": "v22.23.2",
+        "chrome": "/usr/bin/google-chrome Google Chrome 152.0.7977.82",
+        "os": "Ubuntu 24.04.4 LTS"
+      },
+      "ts": "2026-10-17T21:27:35.577Z"
+    },
+    {
+      "stage": "prepare",
+      "level": "success",
+      "message": "Trusted helper and task file installed in the sandbox",
+      "ts": "2026-10-17T21:27:35.631Z"
+    },
+    {
+      "stage": "run",
+      "level": "info",
+      "message": "Attempt 1: running seeded draft in the sandbox (limit 60s)",
+      "ts": "2026-10-17T21:27:35.641Z"
+    },
+    {
+      "stage": "run",
+      "level": "warn",
+      "message": "Attempt 1 failed: script exited with status 1; result.json missing (writeResult was not called or failed); screenshot check: screenshot file missing",
+      "data": {
+        "exitCode": 1,
+        "stderr": "file:///opt/teger/scout-kit.mjs:284\n        throw new Error(`page.evaluate failed: ${d.exception?.description ?? d.text}`.slice(0, 1000));\n              ^\n\nError: page.evaluate failed: TypeError: Cannot read properties of null (reading 'action')\n    at <anonymous>:3:22\n    at <anonymous>:4:3\n    at Object.evaluate (file:///opt/teger/scout-kit.mjs:284:15)\n    at async file:///opt/teger/inspect.mjs:17:14\n\nNode.js v22.23.2\n"
+      },
+      "ts": "2026-10-17T21:27:42.889Z"
+    },
+    {
+      "stage": "repair",
+      "level": "info",
+      "message": "Sending the error and the script back to the agent for a targeted repair",
+      "ts": "2026-10-17T21:27:42.890Z"
+    },
+    {
+      "stage": "repair",
+      "level": "success",
+      "message": "Agent repair: The original script assumed the login form was available synchronously and queried `form#login` which is null on the delayed fixture, throwing before the screenshot was captured. The repair waits for the page to render, collects every form (including shadow roots and password inputs outside forms), wraps extraction in try/catch, and always captures the screenshot first so a preview is saved even when evidence extraction fails.",
+      "ts": "2026-10-17T21:28:24.017Z"
+    },
+    {
+      "stage": "run",
+      "level": "info",
+      "message": "Attempt 2: running agent-written script in the sandbox (limit 60s)",
+      "ts": "2026-10-17T21:28:24.113Z"
+    },
+    {
+      "stage": "run",
+      "level": "success",
+      "message": "Attempt 2 passed every acceptance check",
+      "ts": "2026-10-17T21:28:29.934Z"
+    },
+    {
+      "stage": "collect",
+      "level": "warn",
+      "message": "Trusted kit evidence corrected 2 script claim(s)",
+      "data": {
+        "corrections": [
+          "kit text scan added 2 urgency phrase(s)",
+          "kit text scan added 2 credential request(s)"
+        ]
+      },
+      "ts": "2026-10-17T21:28:29.936Z"
+    },
+    {
+      "stage": "collect",
+      "level": "info",
+      "message": "Storing the verified screenshot in controlled storage",
+      "ts": "2026-10-17T21:28:29.938Z"
+    },
+    {
+      "stage": "collect",
+      "level": "success",
+      "message": "Screenshot verified (1280x800, 31 KB)",
+      "ts": "2026-10-17T21:28:29.942Z"
+    },
+    {
+      "stage": "report",
+      "level": "info",
+      "message": "Scoring evidence with deterministic rules",
+      "ts": "2026-10-17T21:28:29.943Z"
+    },
+    {
+      "stage": "report",
+      "level": "success",
+      "message": "Verdict: High risk",
+      "ts": "2026-10-17T21:28:29.947Z"
+    },
+    {
+      "stage": "cleanup",
+      "level": "info",
+      "message": "Destroying sandbox sb-01m55w6m3cpryh1220rkr6e4ab",
+      "ts": "2026-10-17T21:28:29.949Z"
+    },
+    {
+      "stage": "cleanup",
+      "level": "success",
+      "message": "Sandbox destroyed",
+      "ts": "2026-10-17T21:28:30.227Z"
+    }
+  ],
+  "attempts": [
+    {
+      "n": 1,
+      "author": "seeded",
+      "script": "// SEEDED DRAFT FOR THE REPAIR DEMONSTRATION. NOT WRITTEN BY THE MODEL.\n//\n// Deliberate, documented defect (see docs/REPAIR_DEMO.md): the script assumes\n// the page's login form is present immediately and has id=\"login\". On the\n// /fixtures/delayed page the form appears after three seconds inside a\n// shadow root, so `document.querySelector(\"form#login\")` is null and reading\n// `.action` throws a TypeError. The script also captures the screenshot only\n// after extraction, so the failure loses the preview too.\n//\n// The live agent receives the real stderr and this code, and must repair it.\nimport { task, launchBrowser, writeResult, SCREENSHOT_PATH } from \"/opt/teger/scout-kit.mjs\";\n\nconst browser = await launchBrowser();\nconst page = await browser.newPage();\nconst nav = await page.goto(task.url);\n\nconst form = await page.evaluate(() => {\n  const f = document.querySelector(\"form#login\");\n  return { action: f.action, method: f.method };\n});\n\nconst shot = await page.screenshot();\nawait writeResult({\n  requestedUrl: task.url,\n  finalUrl: nav.finalUrl,\n  httpStatus: nav.status,\n  redirectChain: page.redirectChain(),\n  title: await page.evaluate(() => document.title),\n  claimedIdentity: { siteName: null, brandMentions: [], evidence: [] },\n  forms: [{ action: form.action, method: form.method, hasPasswordField: true, inputTypes: [], inputNames: [], crossOriginAction: false }],\n  loginFormDetected: true,\n  textSignals: { urgencyPhrases: [], credentialRequests: [], instructionsToAI: [] },\n  visibleTextSample: \"\",\n  externalScriptOrigins: [],\n  blockedRequests: page.blockedRequests(),\n  contactedHosts: page.contactedHosts(),\n  screenshot: { path: SCREENSHOT_PATH, bytes: shot.bytes },\n  screenshotError: null,\n  extractionErrors: [],\n  notes: [],\n});\nawait browser.close();\n",
+      "sha256": "ad3553c9d124ffd9074633ab8d424814bee7042681634ffb1ef0ce319d715aa2",
+      "explanation": "Seeded draft for the repair demonstration. Contains a deliberate, documented defect. Not written by the model.",
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "file:///opt/teger/scout-kit.mjs:284\n        throw new Error(`page.evaluate failed: ${d.exception?.description ?? d.text}`.slice(0, 1000));\n              ^\n\nError: page.evaluate failed: TypeError: Cannot read properties of null (reading 'action')\n    at <anonymous>:3:22\n    at <anonymous>:4:3\n    at Object.evaluate (file:///opt/teger/scout-kit.mjs:284:15)\n    at async file:///opt/teger/inspect.mjs:17:14\n\nNode.js v22.23.2\n",
+      "outcome": "failed",
+      "failedChecks": [
+        "script exited with status 1",
+        "result.json missing (writeResult was not called or failed)",
+        "screenshot check: screenshot file missing"
+      ],
+      "durationMs": 7169.017,
+      "startedAt": "2026-10-17T21:27:35.633Z"
+    },
+    {
+      "n": 2,
+      "author": "model",
+      "script": "import { task, launchBrowser, writeResult, clip, SCREENSHOT_PATH } from \"/opt/teger/scout-kit.mjs\";\n\nconst browser = await launchBrowser();\nconst page = await browser.newPage();\nlet extractionErrors = [];\nlet notes = [];\n\nlet nav;\ntry {\n  nav = await page.goto(task.url, { timeoutMs: task.limits.navigationTimeoutMs });\n} catch (e) {\n  extractionErrors.push(`navigation error: ${clip(String(e.message), 500)}`);\n  nav = { finalUrl: null, status: null, navigationError: String(e) };\n}\n\n// Bounded wait for the page to finish rendering.\ntry {\n  await page.waitFor(() => {\n    if (document.readyState !== \"complete\") return false;\n    if (!document.body) return false;\n    return true;\n  }, { timeoutMs: 4000, intervalMs: 200 });\n} catch {\n  notes.push(\"page did not reach readyState complete within budget\");\n}\n\n// Always capture a screenshot, even if extraction fails later.\nlet shot = { bytes: 0 };\nlet screenshotError = null;\ntry {\n  shot = await page.screenshot();\n} catch (e) {\n  screenshotError = clip(String(e?.message || e), 500);\n  extractionErrors.push(`screenshot failed: ${screenshotError}`);\n}\n\n// Extraction wrapped so one failure cannot lose the result or screenshot.\nlet title = null;\nlet visibleTextSample = \"\";\nlet redirectChain = [];\nlet blockedRequests = [];\nlet contactedHosts = [];\nlet forms = [];\nlet loginFormDetected = false;\nlet claimIdentity = { siteName: null, brandMentions: [], evidence: [] };\nlet textSignals = { urgencyPhrases: [], credentialRequests: [], instructionsToAI: [] };\nlet externalScriptOrigins = [];\n\ntry {\n  title = await page.evaluate(() => document.title || null);\n} catch (e) {\n  extractionErrors.push(`title: ${clip(String(e.message), 300)}`);\n}\n\ntry {\n  visibleTextSample = clip(await page.evaluate(() => document.body?.innerText || \"\"), 1500);\n} catch (e) {\n  extractionErrors.push(`visibleTextSample: ${clip(String(e.message), 300)}`);\n}\n\ntry {\n  redirectChain = await page.redirectChain();\n} catch (e) {\n  extractionErrors.push(`redirectChain: ${clip(String(e.message), 300)}`);\n}\n\ntry {\n  blockedRequests = await page.blockedRequests();\n} catch (e) {\n  extractionErrors.push(`blockedRequests: ${clip(String(e.message), 300)}`);\n}\n\ntry {\n  contactedHosts = await page.contactedHosts();\n} catch (e) {\n  extractionErrors.push(`contactedHosts: ${clip(String(e.message), 300)}`);\n}\n\n// Claims identity + brand mentions.\ntry {\n  claimIdentity = await page.evaluate(() => {\n    const out = { siteName: null, brandMentions: [], evidence: [] };\n    const meta = document.querySelector('meta[property=\"og:site_name\"]');\n    if (meta && meta.content) { out.siteName = meta.content.trim(); out.evidence.push(\"og:site_name\"); }\n    if (!out.siteName) {\n      const app = document.querySelector('meta[name=\"application-name\"]');\n      if (app && app.content) { out.siteName = app.content.trim(); out.evidence.push(\"application-name\"); }\n    }\n    if (!out.siteName) {\n      const logo = document.querySelector('img[alt]');\n      if (logo && logo.alt.trim()) { out.siteName = logo.alt.trim(); out.evidence.push(\"img alt\"); }\n    }\n    const mentions = new Set();\n    const add = (v) => { v = (v || \"\").trim(); if (v && v.length < 80) mentions.add(v); };\n    document.querySelectorAll(\"h1,h2,h3,header img[alt],title\").forEach((n) => {\n      if (n.tagName === \"TITLE\") { add(n.textContent); }\n      else if (n.tagName === \"IMG\") { add(n.getAttribute(\"alt\")); }\n      else { add(n.textContent); }\n    });\n    out.brandMentions = Array.from(mentions).slice(0, 10);\n    return out;\n  });\n} catch (e) {\n  extractionErrors.push(`claimedIdentity: ${clip(String(e.message), 300)}`);\n}\n\n// Forms collection (regular + shadow roots + password-input-outside-forms).\ntry {\n  forms = await page.evaluate(() => {\n    const results = [];\n    const origin = location.origin;\n    const toAbs = (action) => {\n      try { return new URL(action || location.href, location.href).href; } catch { return null; }\n    };\n    const isCross = (url) => {\n      if (!url) return false;\n      try { return new URL(url).origin !== origin; } catch { return false; }\n    };\n\n    const seen = new WeakSet();\n    const processForm = (f) => {\n      if (seen.has(f)) return;\n      seen.add(f);\n      const inputs = [];\n      try { f.querySelectorAll(\"input,select,textarea\").forEach((i) => inputs.push(i)); } catch {}\n      const pwd = inputs.some((i) => i.type === \"password\" || i.getAttribute(\"type\") === \"password\");\n      if (pwd) { window.__tegerPwd = true; }\n      results.push({\n        action: toAbs(f.getAttribute(\"action\")),\n        method: (f.getAttribute(\"method\") || \"GET\").toUpperCase(),\n        hasPasswordField: pwd,\n        inputTypes: inputs.map((i) => i.type || \"text\").slice(0, 20),\n        inputNames: inputs.map((i) => i.getAttribute(\"name\") || \"\").filter(Boolean).slice(0, 20),\n        crossOriginAction: isCross(toAbs(f.getAttribute(\"action\")))\n      });\n    };\n\n    document.querySelectorAll(\"form\").forEach(processForm);\n\n    // Shadow roots.\n    const roots = [];\n    const walk = (node) => {\n      try {\n        if (node.shadowRoot) { roots.push(node.shadowRoot); }\n        node.childNodes?.forEach(walk);\n      } catch {}\n    };\n    walk(document.documentElement);\n    roots.forEach((r) => {\n      try { r.querySelectorAll(\"form\").forEach(processForm); } catch {}\n    });\n\n    // Password inputs outside any form.\n    const standalonePwds = [];\n    document.querySelectorAll(\"input[type='password'], input[type=password]\").forEach((i) => {\n      const inForm = i.closest(\"form\");\n      if (!inForm) standalonePwds.push(i);\n    });\n    standalonePwds.forEach((i) => {\n      window.__tegerPwd = true;\n      const nm = i.getAttribute(\"name\");\n      results.push({\n        action: location.href,\n        method: \"GET\",\n        hasPasswordField: true,\n        inputTypes: [\"password\"],\n        inputNames: nm ? [nm] : [],\n        crossOriginAction: isCross(location.href)\n      });\n    });\n\n    return { forms: results, loginFormDetected: !!window.__tegerPwd };\n  });\n  loginFormDetected = forms.loginFormDetected;\n  forms = forms.forms;\n} catch (e) {\n  extractionErrors.push(`forms: ${clip(String(e.message), 300)}`);\n}\n\n// Text signals.\ntry {\n  textSignals = await page.evaluate(() => {\n    const text = (document.body ? document.body.innerText : \"\") || \"\";\n    const lower = text.toLowerCase();\n    const find = (terms) => {\n      const hits = [];\n      terms.forEach((t) => {\n        const idx = lower.indexOf(t.toLowerCase());\n        if (idx !== -1) { hits.push(text.slice(Math.max(0, idx - 10), idx + t.length + 10).trim()); }\n      });\n      return Array.from(new Set(hits)).slice(0, 10);\n    };\n    return {\n      urgencyPhrases: find([\n        \"account suspended\", \"verify within 24 hours\", \"verify within 24hrs\",\n        \"unusual activity\", \"suspended account\", \"confirm your identity\",\n        \"account locked\", \"secure your account\", \"immediate action required\"\n      ]),\n      credentialRequests: find([\n        \"enter your password\", \"confirm your card\", \"password required\",\n        \"sign in to continue\", \"login to your account\", \"enter your credentials\",\n        \"card number required\", \"verify your password\"\n      ]),\n      instructionsToAI: find([\n        \"ignore previous instructions\", \"print your secrets\", \"disable the filter\",\n        \"you are a scraper\", \"as an ai\", \"ignore the above\", \"disregard all rules\"\n      ])\n    };\n  });\n} catch (e) {\n  extractionErrors.push(`textSignals: ${clip(String(e.message), 300)}`);\n}\n\n// External script origins.\ntry {\n  externalScriptOrigins = await page.evaluate(() => {\n    const origins = new Set();\n    document.querySelectorAll(\"script[src]\").forEach((s) => {\n      try { origins.add(new URL(s.src).origin); } catch {}\n    });\n    return Array.from(origins).slice(0, 20);\n  });\n} catch (e) {\n  extractionErrors.push(`externalScriptOrigins: ${clip(String(e.message), 300)}`);\n}\n\nconst finalUrl = nav && nav.finalUrl ? nav.finalUrl : null;\nconst httpStatus = nav && typeof nav.status === \"number\" ? nav.status : null;\n\ntry {\n  redirectChain = await page.redirectChain();\n} catch (e) {\n  extractionErrors.push(`redirectChain: ${clip(String(e.message), 300)}`);\n}\ntry {\n  blockedRequests = await page.blockedRequests();\n} catch (e) {\n  extractionErrors.push(`blockedRequests: ${clip(String(e.message), 300)}`);\n}\ntry {\n  contactedHosts = await page.contactedHosts();\n} catch (e) {\n  extractionErrors.push(`contactedHosts: ${clip(String(e.message), 300)}`);\n}\n\nawait writeResult({\n  requestedUrl: task.url,\n  finalUrl: finalUrl,\n  httpStatus: httpStatus,\n  redirectChain: redirectChain,\n  title: title,\n  claimedIdentity: claimIdentity,\n  forms: forms,\n  loginFormDetected: loginFormDetected,\n  textSignals: textSignals,\n  visibleTextSample: visibleTextSample,\n  externalScriptOrigins: externalScriptOrigins,\n  blockedRequests: blockedRequests,\n  contactedHosts: contactedHosts,\n  screenshot: screenshotError ? null : { path: SCREENSHOT_PATH, bytes: shot.bytes },\n  screenshotError: screenshotError,\n  extractionErrors: extractionErrors,\n  notes: notes,\n});\n\nawait browser.close();\n",
+      "sha256": "3e5b1f3a9280fe578a3887c57fd21727345bcc178ac90752f655b112a2aa49d8",
+      "explanation": "The original script assumed the login form was available synchronously and queried `form#login` which is null on the delayed fixture, throwing before the screenshot was captured. The repair waits for the page to render, collects every form (including shadow roots and password inputs outside forms), wraps extraction in try/catch, and always captures the screenshot first so a preview is saved even when evidence extraction fails.",
+      "exitCode": 0,
+      "stdout": "TEGER_RESULT_WRITTEN 3288\n",
+      "stderr": "",
+      "outcome": "passed",
+      "failedChecks": [],
+      "durationMs": 5672.629,
+      "startedAt": "2026-10-17T21:28:24.021Z"
+    }
+  ],
+  "screenshot": {
+    "file": "repair-demo-delayed.png",
+    "sha256": "93fffc9bd040c7de37bb580cace1d881a1c8832ed7c84d81d87d553e53322fb6",
+    "width": 1280,
+    "height": 800,
+    "bytes": 31870,
+    "artifactId": "art_f8d06cb9806c4b3b9c3fb3aeeddfc5d4"
+  }
+}

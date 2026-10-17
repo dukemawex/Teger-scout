@@ -58,7 +58,11 @@ export function registrableDomain(host: string): string {
   return lastTwo;
 }
 
-const GENERIC_WORDS = new Set(["sign", "signin", "login", "log", "in", "welcome", "home", "account", "secure", "security", "verify", "verification", "update", "online", "bank", "banking", "portal", "page", "my", "the", "and", "support", "help", "service", "services", "official", "website", "site", "inc", "ltd", "llc", "group", "example", "demo", "test"]);
+const GENERIC_WORDS = new Set(["sign", "signin", "login", "log", "in", "welcome", "home", "account", "secure", "security", "verify", "verification", "update", "online", "bank", "banking", "portal", "page", "my", "the", "and", "support", "help", "service", "services", "official", "website", "site", "inc", "ltd", "llc", "group", "example", "demo", "test",
+  // Generic page words that are not brand names.
+  "center", "centre", "dashboard", "member", "members", "customer", "customers", "client", "user", "users", "profile", "settings",
+  "delivery", "parcel", "package", "shipping", "action", "required", "notice", "alert", "important", "payment", "payments", "billing",
+  "invoice", "email", "mail", "access", "password", "reset", "confirm", "confirmation", "details", "information", "status", "your"]);
 
 /** Turn a claimed brand name into comparable tokens (letters/digits only). */
 export function brandTokens(name: string): string[] {
