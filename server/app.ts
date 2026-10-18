@@ -4,7 +4,7 @@ import { streamSSE } from "hono/streaming";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import type { AppConfig } from "./config.js";
-import { BUILD_ID, liveExecutionAvailable } from "./config.js";
+import { BUILD_ID, liveExecutionAvailable, missingSetup } from "./config.js";
 import type { ScanRow, Store } from "./store/db.js";
 import { parseTarget, redactUrl, UrlPolicyError } from "./policy/url.js";
 import { fixtureRoutes, FIXTURE_EXAMPLES } from "./fixtures.js";
@@ -23,6 +23,8 @@ export interface AppDeps {
   store: Store;
   runner: ScanRunner;
   offline: { run(scanId: string, fixtureKey: string): Promise<void> };
+  /** Whether the eve agent process answers. Defaults to assuming it does. */
+  agentHealthy?: () => Promise<boolean>;
 }
 
 type Env = { Variables: { owner: string } };
@@ -37,8 +39,12 @@ function safeEqual(a: string, b: string) {
   return ab.length === bb.length && timingSafeEqual(ab, bb);
 }
 
-export function createApp({ cfg, store, runner, offline }: AppDeps) {
+export function createApp({ cfg, store, runner, offline, agentHealthy = async () => true }: AppDeps) {
   const app = new Hono<Env>();
+  const setup = async () => {
+    const missing = missingSetup(cfg, liveExecutionAvailable(cfg) ? await agentHealthy() : true);
+    return { liveAvailable: missing.length === 0, missing };
+  };
 
   app.use("*", async (c, next) => {
     await next();
@@ -92,10 +98,13 @@ export function createApp({ cfg, store, runner, offline }: AppDeps) {
 
   app.get("/api/health", (c) => c.json({ ok: true }));
 
-  app.get("/api/status", (c) =>
-    c.json({
+  app.get("/api/status", async (c) => {
+    const { liveAvailable, missing } = await setup();
+    return c.json({
       build: BUILD_ID,
-      liveAvailable: liveExecutionAvailable(cfg),
+      liveAvailable,
+      // Names of what is still needed for live scans (never values).
+      missing,
       accessCodeRequired: Boolean(cfg.liveAccessCode),
       createosRegion: (() => {
         try {
@@ -110,8 +119,8 @@ export function createApp({ cfg, store, runner, offline }: AppDeps) {
       pilotDomains: cfg.pilotDomains,
       stages: STAGES,
       fixtures: FIXTURE_EXAMPLES.map((f) => ({ ...f, url: cfg.publicUrl ? `${cfg.publicUrl.replace(/\/$/, "")}${f.path}` : f.path })),
-    }),
-  );
+    });
+  });
 
   app.post("/api/scans", async (c) => {
     const owner = c.get("owner");
@@ -132,8 +141,9 @@ export function createApp({ cfg, store, runner, offline }: AppDeps) {
     }
 
     if (typeof body.url !== "string") return c.json({ error: "Enter a link to inspect." }, 400);
-    if (!liveExecutionAvailable(cfg)) {
-      return c.json({ error: "Live inspection is not configured on this deployment. Try an offline fixture or a recorded demo." }, 503);
+    const { liveAvailable, missing } = await setup();
+    if (!liveAvailable) {
+      return c.json({ error: `Live inspection is not configured on this deployment (${missing.join("; ")}). Try an offline fixture or a recorded demo.`, missing }, 503);
     }
     if (cfg.liveAccessCode) {
       const code = typeof body.accessCode === "string" ? body.accessCode : "";

@@ -1,5 +1,7 @@
 export interface Status {
   liveAvailable: boolean;
+  /** What the deployment still needs for live scans (variable names, never values). */
+  missing?: string[];
   accessCodeRequired: boolean;
   createosRegion: string | null;
   sandbox: { rootfs: string; shape: string };

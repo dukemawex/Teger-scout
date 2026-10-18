@@ -75,6 +75,38 @@ describe("API access control", () => {
     expect(started).toHaveLength(0);
   });
 
+  it("names missing setup in /api/status without exposing values", async () => {
+    const none = makeApp();
+    const status = (await (await none.app.request("/api/status")).json()) as { liveAvailable: boolean; missing: string[] };
+    expect(status.liveAvailable).toBe(false);
+    expect(status.missing.join(" ")).toMatch(/CREATEOS_SANDBOX_API_KEY/);
+    expect(status.missing.join(" ")).toMatch(/GEMINI_API_KEY/);
+    expect(status.missing.join(" ")).toMatch(/scripts\/start\.mjs/);
+
+    const secret = "sk-or-v1-should-never-appear";
+    const ready = makeApp({ CREATEOS_SANDBOX_API_KEY: "  'k'  ", EVE_INTERNAL_PASSWORD: "p", OPENROUTER_API_KEY: secret });
+    const body = await (await ready.app.request("/api/status")).text();
+    expect(JSON.parse(body)).toMatchObject({ liveAvailable: true, missing: [] });
+    expect(body).not.toContain(secret);
+  });
+
+  it("refuses live scans while the agent process is down", async () => {
+    process.env.TEGER_DATA_DIR = mkdtempSync(join(tmpdir(), "teger-app-"));
+    Object.assign(process.env, { CREATEOS_SANDBOX_API_KEY: "k", EVE_INTERNAL_PASSWORD: "p", TEGER_MODEL_API_KEY: "a" });
+    const cfg = loadConfig();
+    for (const k of ["CREATEOS_SANDBOX_API_KEY", "EVE_INTERNAL_PASSWORD", "TEGER_MODEL_API_KEY"]) delete process.env[k];
+    const store = new Store(":memory:");
+    const started: string[] = [];
+    const runner = { start: (id: string) => void started.push(id), cancel: () => {}, runningCount: () => 0 };
+    const offline = createOfflineRunner(cfg, store, join(import.meta.dirname, "../fixtures/offline"));
+    const app = createApp({ cfg, store, runner, offline, agentHealthy: async () => false });
+    const c = await session(app);
+    const res = await app.request("/api/scans", post(c, { url: "https://example.org" }));
+    expect(res.status).toBe(503);
+    expect(((await res.json()) as { error: string }).error).toMatch(/Agent process is not answering/);
+    expect(started).toHaveLength(0);
+  });
+
   it("requires the access code for cost-incurring live scans", async () => {
     const { app, started } = makeApp({ CREATEOS_SANDBOX_API_KEY: "k", EVE_INTERNAL_PASSWORD: "p", ANTHROPIC_API_KEY: "a", TEGER_REQUIRE_ACCESS_CODE: "1", TEGER_LIVE_ACCESS_CODE: "open-sesame" });
     const c = await session(app);

@@ -79,6 +79,18 @@ export function Home({ status, recent, demos, onOpen }: { status: Status | null;
             screenshot and plain-language evidence.
           </p>
 
+          {status && !live && (status.missing?.length ?? 0) > 0 && (
+            <div className="notice setup" role="status">
+              <strong>Live scans are off on this deployment.</strong> It is serving offline fixtures and recorded runs until these are set:
+              <ul>
+                {status.missing!.map((m) => (
+                  <li key={m}>{m}</li>
+                ))}
+              </ul>
+              Then redeploy. <code>/api/status</code> shows the current state.
+            </div>
+          )}
+
           <form className="inspect-form" onSubmit={submit} aria-describedby="inspect-help">
             <label htmlFor="url" className="sr-only">
               Link to inspect

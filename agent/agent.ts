@@ -4,16 +4,15 @@ import { defineAgent } from "eve";
 import { anthropic } from "eve/models/anthropic";
 import { openai } from "eve/models/openai";
 import type { LanguageModel } from "ai";
+import { envKey, KEY_NAMES } from "./lib/env.js";
 import { withFallback, type ModelObject } from "./lib/fallback-model.js";
 
 // The inspection author is a text-only agent: it has no tools and no sandbox
 // access. The trusted controller (server/scan/controller.ts) executes whatever
 // script it proposes inside CreateOS and owns every limit and acceptance check.
 
-const geminiKey = () => process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY;
-// Your own OpenRouter key (TEGER_MODEL_API_KEY) wins over the one provisioned
-// by `stripe projects add openrouter/api` (OPENROUTER_API_API_KEY).
-const openRouterKey = () => process.env.TEGER_MODEL_API_KEY || process.env.OPENROUTER_API_API_KEY;
+const geminiKey = () => envKey(KEY_NAMES.gemini);
+const openRouterKey = () => envKey(KEY_NAMES.openRouter);
 
 function gemini(id?: string): ModelObject {
   const google = createGoogleGenerativeAI({ apiKey: geminiKey() });

@@ -52,11 +52,10 @@ npm ci
 cp .env.example .env            # fill in what you have; offline fixtures work with nothing
 npm run build:web
 npx eve build
-npx eve start --host 127.0.0.1 --port 3101 &   # needs EVE_INTERNAL_PASSWORD and model key in env
-npm start                                       # http://localhost:8080
+npm start                       # http://localhost:8080 (eve agent + API, per-boot eve password)
 ```
 
-Or run both processes with one launcher (generates a per-boot eve password): `node scripts/start.mjs`.
+`npm start` runs `scripts/start.mjs`, which starts the eve agent on `127.0.0.1:3101` and the API together (and builds either if its output is missing). `npm run start:api` runs the API alone, which means offline fixture mode. `GET /api/status` lists anything live scans still need in `missing`.
 
 Without CreateOS and model credentials the app runs in **offline fixture mode**: the UI says so, live scans are refused with a clear message, and the six demonstration pages can be opened as labelled offline fixtures.
 

@@ -58,6 +58,17 @@ createos deployments promote --deployment <deployment-id> --environment <env-id>
 - Runtime variables set on the environment (names only): `CREATEOS_SANDBOX_API_KEY`, `CREATEOS_SANDBOX_BASE_URL`, `TEGER_MODEL_PROVIDER`, `TEGER_MODEL_ID`, `TEGER_MODEL_FALLBACKS`, `TEGER_MODEL_API_KEY`, `TEGER_SANDBOX_ROOTFS`, `TEGER_SANDBOX_SHAPE`, `TEGER_SESSION_SECRET`, `TEGER_PUBLIC_URL`, `TEGER_SCAN_DEADLINE_MS`, `TEGER_DAILY_LIVE_SCANS`, `TEGER_SESSION_HOURLY_SCANS`, `NODE_ENV`.
 - Warning: `createos environments list -o json` prints environment variable **values**. Filter its output or avoid it in shared logs.
 
+### Checking a deployment
+`GET /api/status` reports `build` (the commit's `BUILD_ID`), `liveAvailable`, and `missing`: the names of anything live scans still need (never values). The home page shows the same list when live scans are off, and the server logs it at boot. Live scans need all three of:
+
+| Need | How |
+| --- | --- |
+| CreateOS sandbox key | `CREATEOS_SANDBOX_API_KEY` (also accepted: `CREATEOS_API_KEY`, `CREATEOS_PROJECT_API_KEY`) |
+| Model key | `GEMINI_API_KEY` (also `GOOGLE_GENERATIVE_AI_API_KEY`, `GOOGLE_API_KEY`) and/or `TEGER_MODEL_API_KEY` (also `OPENROUTER_API_KEY`, `OPENROUTER_API_API_KEY`) |
+| The eve agent process | Start with `node scripts/start.mjs` (the Dockerfile `CMD`, also `npm start`). It generates `EVE_INTERNAL_PASSWORD` and runs the agent next to the API; `npm run start:api` alone runs offline fixture mode only. |
+
+Values are trimmed and surrounding quotes are removed, so a key pasted as `"sk-..."` still works. Environment changes reach the container only after a redeploy.
+
 ### Persistence
 The SQLite database lives on the container disk. It survives page refreshes and SSE reconnects, but not a redeploy or container replacement. Recorded demos in `recorded/` are re-imported at boot. A provisioned store (for example Postgres) would be the next step.
 
@@ -81,8 +92,8 @@ To deploy: Vercel → Add New Project → import `dukemawex/Teger-scout` → kee
 
 | Variable (set on the CreateOS environment, not on Vercel) | Effect |
 | --- | --- |
-| `GEMINI_API_KEY` or `GOOGLE_GENERATIVE_AI_API_KEY` | Google AI Studio key. When present, Gemini (`TEGER_GEMINI_MODEL_ID`, default `gemini-flash-latest`) becomes the primary model. |
-| `TEGER_MODEL_API_KEY` | Your own OpenRouter key. Overrides the Stripe-provisioned `OPENROUTER_API_API_KEY`. Used for the free OpenRouter models, as the fallback behind Gemini. |
+| `GEMINI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` or `GOOGLE_API_KEY` | Google AI Studio key. When present, Gemini (`TEGER_GEMINI_MODEL_ID`, default `gemini-flash-latest`) becomes the primary model. |
+| `TEGER_MODEL_API_KEY` or `OPENROUTER_API_KEY` | Your own OpenRouter key. Overrides the Stripe-provisioned `OPENROUTER_API_API_KEY`. Used for the free OpenRouter models, as the fallback behind Gemini. |
 | `TEGER_OPENROUTER_MODEL_ID`, `TEGER_MODEL_FALLBACKS` | Free OpenRouter model and server-side fallback list (max 3 models in total). |
 
 If the primary model's request fails (rate limit, outage, bad key), the same turn is retried on the fallback (`agent/lib/fallback-model.ts`). After adding or changing a key, redeploy (or promote a new deployment) so the container picks it up.

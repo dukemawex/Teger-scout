@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { loadConfig } from "./config.js";
+import { liveExecutionAvailable, loadConfig, missingSetup } from "./config.js";
 import { Store } from "./store/db.js";
 import { createApp } from "./app.js";
 import { ScanController, recoverOrphans, loadKit } from "./scan/controller.js";
@@ -41,8 +41,21 @@ const runner = {
   runningCount: () => running.size,
 };
 
+// Any HTTP answer (even 401) means the eve process is up. Cached briefly so
+// /api/status stays cheap.
+let agentCheck: { at: number; ok: boolean } | null = null;
+async function agentHealthy() {
+  if (agentCheck && Date.now() - agentCheck.at < 10_000) return agentCheck.ok;
+  const ok = await fetch(`${cfg.eve.host}/eve/v1/health`, { signal: AbortSignal.timeout(2_000) }).then(
+    () => true,
+    () => false,
+  );
+  agentCheck = { at: Date.now(), ok };
+  return ok;
+}
+
 const offline = createOfflineRunner(cfg, store, join(root, "fixtures/offline"));
-const app = createApp({ cfg, store, runner, offline });
+const app = createApp({ cfg, store, runner, offline, agentHealthy });
 
 const webDist = join(root, "dist/web");
 if (existsSync(webDist)) {
@@ -57,5 +70,7 @@ if (cfg.createos.apiKey) {
 await importRecordedDemos(store, cfg, join(root, "recorded")).catch((e) => log(`recorded demo import failed: ${(e as Error).message}`));
 
 serve({ fetch: app.fetch, port: cfg.port, hostname: "0.0.0.0" }, (info) => {
-  log(`listening on :${info.port} (live execution ${cfg.createos.apiKey ? "configured" : "not configured"}, CreateOS ${cfg.createos.baseUrl})`);
+  log(`listening on :${info.port} (CreateOS ${cfg.createos.baseUrl}, model ${cfg.model.provider}/${cfg.model.id || "default"})`);
+  if (liveExecutionAvailable(cfg)) log("live execution configured");
+  else log(`live execution NOT configured, offline fixture mode. Missing: ${missingSetup(cfg, true).join("; ")}`);
 });

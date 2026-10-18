@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { envKey, KEY_NAMES } from "../agent/lib/env.js";
 
 function int(name: string, fallback: number) {
   const v = process.env[name];
@@ -7,7 +8,7 @@ function int(name: string, fallback: number) {
 }
 
 /** Identifies the running build in /api/status. */
-export const BUILD_ID = "2026-10-17.open-live-scans";
+export const BUILD_ID = "2026-10-18.setup-diagnostics";
 
 export function loadConfig() {
   const dataDir = process.env.TEGER_DATA_DIR ?? "./data";
@@ -21,7 +22,7 @@ export function loadConfig() {
     createos: {
       // Stripe Projects provisions CREATEOS_PROJECT_API_KEY; it was verified to
       // authenticate the Sandbox API (whoami) at the EU endpoint.
-      apiKey: process.env.CREATEOS_SANDBOX_API_KEY || process.env.CREATEOS_PROJECT_API_KEY || "",
+      apiKey: envKey(KEY_NAMES.createos),
       baseUrl: process.env.CREATEOS_SANDBOX_BASE_URL ?? "https://api-eu.sb.createos.sh",
       shape: process.env.TEGER_SANDBOX_SHAPE ?? "s-1vcpu-1gb",
       rootfs: process.env.TEGER_SANDBOX_ROOTFS ?? "desktop:1",
@@ -41,7 +42,6 @@ export function loadConfig() {
       dailyLiveScans: int("TEGER_DAILY_LIVE_SCANS", 8),
       perSessionHourlyScans: int("TEGER_SESSION_HOURLY_SCANS", 4),
     },
-    // Live scans create billable sandboxes, so they require an access code.
     // Live scans are open by default. Set TEGER_REQUIRE_ACCESS_CODE=1 together
     // with TEGER_LIVE_ACCESS_CODE to require a code for billable scans.
     liveAccessCode: process.env.TEGER_REQUIRE_ACCESS_CODE === "1" ? (process.env.TEGER_LIVE_ACCESS_CODE ?? "").trim() : "",
@@ -58,8 +58,8 @@ export type AppConfig = ReturnType<typeof loadConfig>;
 /** Mirrors agent/agent.ts so /api/status reports the model actually in use. */
 function describeModel() {
   const requested = process.env.TEGER_MODEL_PROVIDER ?? "auto";
-  const gemini = Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GEMINI_API_KEY);
-  const openRouter = Boolean(process.env.TEGER_MODEL_API_KEY || process.env.OPENROUTER_API_API_KEY);
+  const gemini = Boolean(envKey(KEY_NAMES.gemini));
+  const openRouter = Boolean(envKey(KEY_NAMES.openRouter));
   const orModel = process.env.TEGER_OPENROUTER_MODEL_ID || process.env.TEGER_MODEL_ID || "poolside/laguna-s-2.1:free";
   const geminiModel = process.env.TEGER_GEMINI_MODEL_ID || "gemini-flash-latest";
   let provider = requested;
@@ -88,4 +88,17 @@ function describeModel() {
 
 export function liveExecutionAvailable(cfg: AppConfig) {
   return Boolean(cfg.createos.apiKey && cfg.eve.password && cfg.model.configured);
+}
+
+/**
+ * What a deployment still needs before live scans can run, by variable name.
+ * Never includes values. `agentReachable` is the result of probing the eve process.
+ */
+export function missingSetup(cfg: AppConfig, agentReachable: boolean) {
+  const missing: string[] = [];
+  if (!cfg.createos.apiKey) missing.push(`CreateOS sandbox key: set ${KEY_NAMES.createos[0]}`);
+  if (!cfg.model.configured) missing.push(`Model key: set GEMINI_API_KEY (Google AI Studio) or ${KEY_NAMES.openRouter[0]} (OpenRouter)`);
+  if (!cfg.eve.password) missing.push("Agent process: start the app with `node scripts/start.mjs` (Dockerfile runtime, or `npm start`)");
+  else if (!agentReachable) missing.push(`Agent process is not answering at ${cfg.eve.host}; check the deployment logs`);
+  return missing;
 }
