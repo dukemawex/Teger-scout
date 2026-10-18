@@ -78,7 +78,7 @@ Scans run for minutes (free models can take 10+), which does not fit request-sco
 
 `vercel.json` (no environment variables needed on Vercel):
 - `buildCommand: npm run build:web`, `outputDirectory: dist/web`, `framework: null` (prevents auto-detection of the eve package as an app)
-- rewrites: `/api/*` and `/fixtures/*` → `https://production-teger-scout.tyzo.nodeops.app/...`; everything else → `index.html`
+- rewrites: `/api/*` and `/fixtures/*` → `https://production-tegerscout.tyzo.nodeops.app/...`; everything else → `index.html`
 - the same CSP and security headers as the backend
 - the UI falls back to polling `/api/scans/:id/events` every 4 s in case the proxy buffers server-sent events
 
